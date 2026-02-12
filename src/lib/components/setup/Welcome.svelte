@@ -24,7 +24,7 @@
         Everything that follows happens on your machine. We're about to generate your sovereign identity.
       </p>
     </div>
-    <button class="continue-btn" on:click={handleContinue}>
+    <button class="continue-btn" onclick={handleContinue}>
       Continue
     </button>
   </div>

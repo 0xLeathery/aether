@@ -11,14 +11,10 @@
 
   // Detect platform for keychain name
   const platform = navigator.platform.toLowerCase();
-  let keychainName = 'system keychain';
-  if (platform.includes('mac')) {
-    keychainName = 'macOS Keychain';
-  } else if (platform.includes('win')) {
-    keychainName = 'Windows Credential Manager';
-  } else if (platform.includes('linux')) {
-    keychainName = 'system keyring';
-  }
+  const keychainName = platform.includes('mac') ? 'macOS Keychain' :
+    platform.includes('win') ? 'Windows Credential Manager' :
+    platform.includes('linux') ? 'system keyring' :
+    'system keychain';
 </script>
 
 <div class="setup-complete">
@@ -34,7 +30,7 @@
       Your key is stored in {keychainName}. It will load automatically next time.
     </p>
 
-    <button class="enter-btn" on:click={handleEnter}>
+    <button class="enter-btn" onclick={handleEnter}>
       Enter Aether
     </button>
   </div>

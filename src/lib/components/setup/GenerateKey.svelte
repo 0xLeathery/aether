@@ -36,7 +36,7 @@
 
     {#if state === 'ready'}
       <p class="subtext">Click below to generate your Ed25519 cryptographic keypair.</p>
-      <button class="generate-btn" on:click={handleGenerate}>
+      <button class="generate-btn" onclick={handleGenerate}>
         Generate Keypair
       </button>
     {:else if state === 'generating'}
@@ -51,7 +51,7 @@
           <code class="short-id">{generatedIdentity.short_id}</code>
         </div>
         <p class="success-text">Identity created and stored securely.</p>
-        <button class="continue-btn" on:click={handleContinue}>
+        <button class="continue-btn" onclick={handleContinue}>
           Continue
         </button>
       </div>
@@ -66,7 +66,7 @@
             On Windows, Credential Manager should be available by default.
           </p>
         </div>
-        <button class="retry-btn" on:click={handleRetry}>
+        <button class="retry-btn" onclick={handleRetry}>
           Retry
         </button>
       </div>

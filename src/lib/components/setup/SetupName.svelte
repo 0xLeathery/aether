@@ -32,11 +32,10 @@
       <input
         type="text"
         bind:value={displayName}
-        on:input={handleInput}
-        on:keydown={(e) => e.key === 'Enter' && handleContinue()}
+        oninput={handleInput}
+        onkeydown={(e) => e.key === 'Enter' && handleContinue()}
         placeholder="Enter your display name"
         class:has-error={error}
-        autofocus
       />
       {#if error}
         <span class="error-message">{error}</span>
@@ -45,7 +44,7 @@
 
     <button
       class="continue-btn"
-      on:click={handleContinue}
+      onclick={handleContinue}
       disabled={!displayName.trim()}
     >
       Continue
