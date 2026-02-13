@@ -58,12 +58,12 @@ pub fn to_libp2p_keypair(signing_key: &SigningKey) -> Result<libp2p::identity::K
     // Extract the 32-byte secret scalar
     let secret_bytes = signing_key.to_bytes();
 
-    // libp2p expects a mutable slice and will derive the public key internally
-    let mut secret_bytes_mut = secret_bytes.to_vec();
-
-    // Create libp2p ed25519 keypair from secret bytes
-    let libp2p_ed25519 = libp2p::identity::ed25519::Keypair::try_from_bytes(&mut secret_bytes_mut)
+    // Create libp2p SecretKey from the 32-byte secret (not the 64-byte concatenated format)
+    let libp2p_secret = libp2p::identity::ed25519::SecretKey::try_from_bytes(secret_bytes)
         .map_err(|e| IdentityError::KeyGeneration(format!("libp2p key conversion failed: {}", e)))?;
+
+    // Generate the keypair from the secret key (libp2p will derive the public key)
+    let libp2p_ed25519 = libp2p::identity::ed25519::Keypair::from(libp2p_secret);
 
     // Wrap in libp2p::identity::Keypair
     Ok(libp2p::identity::Keypair::from(libp2p_ed25519))
