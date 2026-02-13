@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
-  const dispatch = createEventDispatcher();
+  let { onNext }: { onNext: (displayName: string) => void } = $props();
 
   let displayName = $state('');
   let error = $state('');
@@ -13,7 +11,7 @@
       return;
     }
     error = '';
-    dispatch('next', { displayName: trimmed });
+    onNext(trimmed);
   }
 
   function handleInput() {

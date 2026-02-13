@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
 
-  let { publicKeyHex, size = 40 } = $props<{ publicKeyHex: string; size?: number }>();
+  let { publicKeyHex, size = 40 }: { publicKeyHex: string; size?: number } = $props();
 
   let canvas: HTMLCanvasElement;
 

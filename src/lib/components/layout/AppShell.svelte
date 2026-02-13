@@ -3,7 +3,7 @@
   import ChannelList from './ChannelList.svelte';
   import MainContent from './MainContent.svelte';
 
-  let { identity } = $props<{ identity: any }>();
+  let { identity }: { identity: any } = $props();
 </script>
 
 <div class="app-shell">

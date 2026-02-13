@@ -1,15 +1,6 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  let { identity, onEnter }: { identity: any; onEnter: () => void } = $props();
 
-  const dispatch = createEventDispatcher();
-
-  let { identity } = $props<{ identity: any }>();
-
-  function handleEnter() {
-    dispatch('enter');
-  }
-
-  // Detect platform for keychain name
   const platform = navigator.platform.toLowerCase();
   const keychainName = platform.includes('mac') ? 'macOS Keychain' :
     platform.includes('win') ? 'Windows Credential Manager' :
@@ -30,7 +21,7 @@
       Your key is stored in {keychainName}. It will load automatically next time.
     </p>
 
-    <button class="enter-btn" onclick={handleEnter}>
+    <button class="enter-btn" onclick={onEnter}>
       Enter Aether
     </button>
   </div>

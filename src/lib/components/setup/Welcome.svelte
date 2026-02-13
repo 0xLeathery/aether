@@ -1,11 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-
-  const dispatch = createEventDispatcher();
-
-  function handleContinue() {
-    dispatch('next');
-  }
+  let { onNext }: { onNext: () => void } = $props();
 </script>
 
 <div class="welcome">
@@ -24,7 +18,7 @@
         Everything that follows happens on your machine. We're about to generate your sovereign identity.
       </p>
     </div>
-    <button class="continue-btn" onclick={handleContinue}>
+    <button class="continue-btn" onclick={onNext}>
       Continue
     </button>
   </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import Avatar from '../profile/Avatar.svelte';
 
-  let { identity } = $props<{ identity: any }>();
+  let { identity }: { identity: any } = $props();
 </script>
 
 <div class="main-content">

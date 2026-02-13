@@ -1,11 +1,10 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
   import Welcome from './Welcome.svelte';
   import SetupName from './SetupName.svelte';
   import GenerateKey from './GenerateKey.svelte';
   import SetupComplete from './SetupComplete.svelte';
 
-  const dispatch = createEventDispatcher();
+  let { onSetupComplete }: { onSetupComplete: () => void } = $props();
 
   type Step = 'welcome' | 'name' | 'generate' | 'complete';
 
@@ -17,43 +16,43 @@
     currentStep = 'name';
   }
 
-  function handleNameNext(event: CustomEvent<{ displayName: string }>) {
-    displayName = event.detail.displayName;
+  function handleNameNext(name: string) {
+    displayName = name;
     currentStep = 'generate';
   }
 
-  function handleGenerateComplete(event: CustomEvent<{ identity: any }>) {
-    identity = event.detail.identity;
+  function handleGenerateComplete(id: any) {
+    identity = id;
     currentStep = 'complete';
   }
 
   function handleEnter() {
-    dispatch('setup-complete');
+    onSetupComplete();
   }
 </script>
 
 <div class="setup-flow">
   <div class="step-container" class:visible={currentStep === 'welcome'}>
     {#if currentStep === 'welcome'}
-      <Welcome on:next={handleWelcomeNext} />
+      <Welcome onNext={handleWelcomeNext} />
     {/if}
   </div>
 
   <div class="step-container" class:visible={currentStep === 'name'}>
     {#if currentStep === 'name'}
-      <SetupName on:next={handleNameNext} />
+      <SetupName onNext={handleNameNext} />
     {/if}
   </div>
 
   <div class="step-container" class:visible={currentStep === 'generate'}>
     {#if currentStep === 'generate'}
-      <GenerateKey {displayName} on:complete={handleGenerateComplete} />
+      <GenerateKey {displayName} onComplete={handleGenerateComplete} />
     {/if}
   </div>
 
   <div class="step-container" class:visible={currentStep === 'complete'}>
     {#if currentStep === 'complete' && identity}
-      <SetupComplete {identity} on:enter={handleEnter} />
+      <SetupComplete {identity} onEnter={handleEnter} />
     {/if}
   </div>
 </div>

@@ -2,7 +2,7 @@
   import Avatar from '../profile/Avatar.svelte';
   import ProfilePopover from '../profile/ProfilePopover.svelte';
 
-  let { identity } = $props<{ identity: any }>();
+  let { identity }: { identity: any } = $props();
 
   let showProfile = $state(false);
 

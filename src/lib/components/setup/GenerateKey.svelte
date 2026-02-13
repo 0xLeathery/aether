@@ -1,10 +1,7 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
-  import { identityStore } from '../../stores/identity';
+  import { identityStore } from '../../stores/identity.svelte';
 
-  const dispatch = createEventDispatcher();
-
-  let { displayName } = $props<{ displayName: string }>();
+  let { displayName, onComplete }: { displayName: string; onComplete: (identity: any) => void } = $props();
 
   let state = $state<'ready' | 'generating' | 'success' | 'error'>('ready');
   let generatedIdentity = $state<any>(null);
@@ -26,7 +23,7 @@
   }
 
   function handleContinue() {
-    dispatch('complete', { identity: generatedIdentity });
+    onComplete(generatedIdentity);
   }
 </script>
 

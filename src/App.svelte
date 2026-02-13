@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { identityStore } from './lib/stores/identity';
+  import { identityStore } from './lib/stores/identity.svelte';
   import SetupFlow from './lib/components/setup/SetupFlow.svelte';
   import AppShell from './lib/components/layout/AppShell.svelte';
 
@@ -26,7 +26,7 @@
     <div class="loading-text">Initializing<span class="cursor">_</span></div>
   </div>
 {:else if appState === 'setup'}
-  <SetupFlow on:setup-complete={handleSetupComplete} />
+  <SetupFlow onSetupComplete={handleSetupComplete} />
 {:else if appState === 'app' && identityStore.identity}
   <AppShell identity={identityStore.identity} />
 {/if}

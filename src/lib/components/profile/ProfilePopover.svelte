@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { identityStore } from '../../stores/identity';
+  import { identityStore } from '../../stores/identity.svelte';
   import Avatar from './Avatar.svelte';
 
-  let { isOpen = $bindable(false) } = $props<{ isOpen?: boolean }>();
+  let { isOpen = $bindable(false) }: { isOpen?: boolean } = $props();
 
   let isEditing = $state(false);
   let editedName = $state('');
@@ -63,7 +63,7 @@
   }
 </script>
 
-<svelte:window on:click={handleClickOutside} />
+<svelte:window onclick={handleClickOutside} />
 
 {#if isOpen && identity}
   <div class="profile-popover">
