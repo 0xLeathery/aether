@@ -1,9 +1,9 @@
 mod behaviour;
-mod peer_state;
+pub mod peer_state;
 mod swarm;
 
 use futures::StreamExt;
-use libp2p::mdns;
+use libp2p::{mdns, Multiaddr, PeerId};
 use serde::Serialize;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -32,6 +32,8 @@ struct PeerStatusUpdate {
 pub struct NetworkService {
     cmd_tx: Option<mpsc::UnboundedSender<NetworkCommand>>,
     peer_state: Arc<RwLock<PeerStateTracker>>,
+    peer_id: Option<PeerId>,
+    listening_addrs: Arc<RwLock<Vec<Multiaddr>>>,
 }
 
 impl NetworkService {
@@ -40,6 +42,8 @@ impl NetworkService {
         Self {
             cmd_tx: None,
             peer_state: Arc::new(RwLock::new(PeerStateTracker::new())),
+            peer_id: None,
+            listening_addrs: Arc::new(RwLock::new(Vec::new())),
         }
     }
 
@@ -54,6 +58,10 @@ impl NetworkService {
         // Load libp2p keypair from keychain
         let keypair = keypair::load_libp2p_keypair()?;
 
+        // Store peer ID for status queries
+        let peer_id = PeerId::from_public_key(&keypair.public());
+        self.peer_id = Some(peer_id);
+
         // Build swarm
         let mut swarm = swarm::build_swarm(keypair)?;
 
@@ -64,8 +72,9 @@ impl NetworkService {
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();
         self.cmd_tx = Some(cmd_tx);
 
-        // Clone peer state for event loop
+        // Clone shared state for event loop
         let peer_state = Arc::clone(&self.peer_state);
+        let listening_addrs = Arc::clone(&self.listening_addrs);
 
         // Spawn event loop in background
         tauri::async_runtime::spawn(async move {
@@ -103,6 +112,11 @@ impl NetworkService {
                                 }
                                 _ => {}
                             }
+                        }
+
+                        // Capture listening addresses
+                        if let libp2p::swarm::SwarmEvent::NewListenAddr { address, .. } = &event {
+                            listening_addrs.write().await.push(address.clone());
                         }
 
                         // Emit status updates for connection events
@@ -180,5 +194,19 @@ impl NetworkService {
     /// Check if service is running
     pub fn is_running(&self) -> bool {
         self.cmd_tx.is_some()
+    }
+
+    /// Get local peer ID (returns None if not started)
+    pub fn local_peer_id(&self) -> Option<PeerId> {
+        self.peer_id
+    }
+
+    /// Get listening addresses (returns empty vec if not started or no addresses yet)
+    pub fn listening_addrs(&self) -> Vec<Multiaddr> {
+        if let Ok(addrs) = self.listening_addrs.try_read() {
+            addrs.clone()
+        } else {
+            Vec::new()
+        }
     }
 }

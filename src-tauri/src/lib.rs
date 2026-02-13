@@ -35,6 +35,9 @@ pub fn run() {
             commands::identity::create_identity,
             commands::identity::get_identity,
             commands::identity::update_display_name,
+            commands::network::get_network_status,
+            commands::network::get_peers,
+            commands::network::start_network,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
