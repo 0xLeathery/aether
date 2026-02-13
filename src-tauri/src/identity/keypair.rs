@@ -2,6 +2,7 @@ use ed25519_dalek::{SigningKey, VerifyingKey};
 use rand::rngs::OsRng;
 
 use crate::error::IdentityError;
+use crate::identity::storage;
 
 /// Generate a new Ed25519 keypair using OS random source
 pub fn generate_keypair() -> (SigningKey, VerifyingKey) {
@@ -47,4 +48,32 @@ pub fn public_key_short_id(key: &VerifyingKey) -> String {
         &short[8..12],
         &short[12..16]
     )
+}
+
+/// Convert ed25519-dalek SigningKey to libp2p Keypair
+///
+/// This ensures PeerId is deterministically derived from the existing keychain identity.
+/// NEVER use libp2p's with_new_identity() - always derive from our Ed25519 key.
+pub fn to_libp2p_keypair(signing_key: &SigningKey) -> Result<libp2p::identity::Keypair, IdentityError> {
+    // Extract the 32-byte secret scalar
+    let secret_bytes = signing_key.to_bytes();
+
+    // libp2p expects a mutable slice and will derive the public key internally
+    let mut secret_bytes_mut = secret_bytes.to_vec();
+
+    // Create libp2p ed25519 keypair from secret bytes
+    let libp2p_ed25519 = libp2p::identity::ed25519::Keypair::try_from_bytes(&mut secret_bytes_mut)
+        .map_err(|e| IdentityError::KeyGeneration(format!("libp2p key conversion failed: {}", e)))?;
+
+    // Wrap in libp2p::identity::Keypair
+    Ok(libp2p::identity::Keypair::from(libp2p_ed25519))
+}
+
+/// Load libp2p keypair from keychain storage
+///
+/// Convenience function that loads the secret key from keychain and converts to libp2p format.
+pub fn load_libp2p_keypair() -> Result<libp2p::identity::Keypair, IdentityError> {
+    let secret_key_bytes = storage::load_secret_key()?;
+    let signing_key = signing_key_from_bytes(&secret_key_bytes)?;
+    to_libp2p_keypair(&signing_key)
 }

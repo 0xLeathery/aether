@@ -26,3 +26,30 @@ impl serde::Serialize for IdentityError {
         serializer.serialize_str(&self.to_string())
     }
 }
+
+#[derive(Debug, Error)]
+pub enum NetworkError {
+    #[error("Failed to convert ed25519 key: {0}")]
+    Libp2pKeyConversion(String),
+    #[error("Failed to create transport: {0}")]
+    TransportInit(String),
+    #[error("Failed to start swarm: {0}")]
+    SwarmStart(String),
+    #[error("Failed to listen on address: {0}")]
+    ListenFailed(String),
+    #[error("Network service not running")]
+    NotRunning,
+    #[error("Network service already running")]
+    AlreadyRunning,
+    #[error(transparent)]
+    Identity(#[from] IdentityError),
+}
+
+impl serde::Serialize for NetworkError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
