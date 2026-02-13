@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { identityStore } from './lib/stores/identity.svelte';
+  import { networkStore } from './lib/stores/network.svelte';
   import SetupFlow from './lib/components/setup/SetupFlow.svelte';
   import AppShell from './lib/components/layout/AppShell.svelte';
 
@@ -10,13 +11,17 @@
     await identityStore.initialize();
 
     if (identityStore.identity) {
+      // Identity exists, initialize network (auto-starts if identity present)
+      await networkStore.initialize();
       appState = 'app';
     } else {
       appState = 'setup';
     }
   });
 
-  function handleSetupComplete() {
+  async function handleSetupComplete() {
+    // After identity creation, start the network
+    await networkStore.start();
     appState = 'app';
   }
 </script>

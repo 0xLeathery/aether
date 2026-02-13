@@ -1,5 +1,9 @@
 import { invoke } from '@tauri-apps/api/core';
-import { listen, type UnlistenFn } from '@tauri-apps/api/event';
+import { listen } from '@tauri-apps/api/event';
+import type { UnlistenFn } from '@tauri-apps/api/event';
+
+// Re-export UnlistenFn for convenience
+export type { UnlistenFn };
 
 // Identity types
 export interface IdentityInfo {

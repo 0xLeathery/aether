@@ -1,6 +1,8 @@
 <script lang="ts">
   import Avatar from '../profile/Avatar.svelte';
   import ProfilePopover from '../profile/ProfilePopover.svelte';
+  import PeerList from '../peers/PeerList.svelte';
+  import { networkStore } from '../../stores/network.svelte';
 
   let { identity }: { identity: any } = $props();
 
@@ -12,6 +14,19 @@
 </script>
 
 <div class="sidebar">
+  <div class="header">
+    <h2>PEERS</h2>
+  </div>
+
+  <PeerList peers={networkStore.peers} />
+
+  <div class="network-status">
+    <div class="status-indicator" class:online={networkStore.status?.running}>
+      <div class="status-dot"></div>
+      <span class="status-text">{networkStore.status?.running ? 'online' : 'offline'}</span>
+    </div>
+  </div>
+
   <div class="header">
     <h2>SWARMS</h2>
   </div>
@@ -107,5 +122,37 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .network-status {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ff4444;
+    transition: background 0.3s ease;
+  }
+
+  .status-indicator.online .status-dot {
+    background: var(--accent-primary);
+  }
+
+  .status-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
   }
 </style>
