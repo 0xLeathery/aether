@@ -11,8 +11,9 @@
     await identityStore.initialize();
 
     if (identityStore.identity) {
-      // Identity exists, initialize network (auto-starts if identity present)
+      // Identity exists, initialize and start network
       await networkStore.initialize();
+      await networkStore.start();
       appState = 'app';
     } else {
       appState = 'setup';
