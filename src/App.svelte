@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { identityStore } from './lib/stores/identity.svelte';
   import { networkStore } from './lib/stores/network.svelte';
+  import { swarmStore } from './lib/stores/swarm.svelte';
   import SetupFlow from './lib/components/setup/SetupFlow.svelte';
   import AppShell from './lib/components/layout/AppShell.svelte';
 
@@ -11,9 +12,10 @@
     await identityStore.initialize();
 
     if (identityStore.identity) {
-      // Identity exists, initialize and start network
+      // Identity exists, initialize network and swarms
       await networkStore.initialize();
       await networkStore.start();
+      await swarmStore.initialize();
       appState = 'app';
     } else {
       appState = 'setup';
@@ -21,8 +23,9 @@
   });
 
   async function handleSetupComplete() {
-    // After identity creation, start the network
+    // After identity creation, start the network and initialize swarms
     await networkStore.start();
+    await swarmStore.initialize();
     appState = 'app';
   }
 </script>

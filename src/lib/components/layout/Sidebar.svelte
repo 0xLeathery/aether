@@ -2,11 +2,17 @@
   import Avatar from '../profile/Avatar.svelte';
   import ProfilePopover from '../profile/ProfilePopover.svelte';
   import PeerList from '../peers/PeerList.svelte';
+  import SwarmSelector from '../swarm/SwarmSelector.svelte';
+  import InviteDialog from '../swarm/InviteDialog.svelte';
+  import JoinDialog from '../swarm/JoinDialog.svelte';
   import { networkStore } from '../../stores/network.svelte';
+  import { swarmStore } from '../../stores/swarm.svelte';
 
   let { identity }: { identity: any } = $props();
 
   let showProfile = $state(false);
+  let showInvite = $state(false);
+  let showJoin = $state(false);
 
   function toggleProfile() {
     showProfile = !showProfile;
@@ -31,10 +37,13 @@
     <h2>SWARMS</h2>
   </div>
 
-  <div class="empty-state">
-    <p>No swarms yet</p>
-    <span class="hint">Swarms enable mesh collaboration</span>
-  </div>
+  <SwarmSelector
+    swarms={swarmStore.swarms}
+    activeSwarmId={swarmStore.activeSwarm?.id ?? null}
+    onSelect={(id) => swarmStore.selectSwarm(id)}
+    onCreateClick={() => showInvite = true}
+    onJoinClick={() => showJoin = true}
+  />
 
   <div class="profile-section">
     <button class="profile-trigger" onclick={toggleProfile}>
@@ -44,6 +53,8 @@
   </div>
 
   <ProfilePopover bind:isOpen={showProfile} />
+  <InviteDialog bind:open={showInvite} onClose={() => showInvite = false} />
+  <JoinDialog bind:open={showJoin} onClose={() => showJoin = false} />
 </div>
 
 <style>
@@ -67,30 +78,6 @@
     color: var(--text-muted);
     letter-spacing: 0.15em;
     font-weight: 500;
-  }
-
-  .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem 1rem;
-    text-align: center;
-  }
-
-  .empty-state p {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    margin-bottom: 0.5rem;
-  }
-
-  .empty-state .hint {
-    font-family: var(--font-mono);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    line-height: 1.4;
   }
 
   .profile-section {
