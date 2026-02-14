@@ -20,6 +20,10 @@ pub fn run() {
             commands::network::get_network_status,
             commands::network::get_peers,
             commands::network::start_network,
+            commands::swarm::create_swarm,
+            commands::swarm::join_swarm,
+            commands::swarm::list_swarms,
+            commands::swarm::switch_swarm,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

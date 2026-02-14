@@ -1,7 +1,9 @@
 use libp2p::{
     autonat, dcutr, identify, kad, mdns, noise, ping,
-    swarm::Swarm,
-    tcp, yamux, PeerId, SwarmBuilder,
+    core::transport::upgrade::Version,
+    pnet::PnetConfig,
+    swarm::{Swarm, behaviour::toggle::Toggle},
+    tcp, yamux, PeerId, SwarmBuilder, Transport,
 };
 use std::time::Duration;
 
@@ -12,70 +14,152 @@ use super::behaviour::AetherBehaviour;
 /// Build a libp2p swarm with Aether network behaviour
 ///
 /// Creates a swarm with:
-/// - QUIC transport (primary, better NAT traversal)
-/// - TCP transport (fallback, with port reuse for hole-punching)
-/// - 7 composed behaviours (kad, mdns, relay, dcutr, autonat, identify, ping)
+/// - TCP transport (always included)
+/// - QUIC transport (only when PSK is None - QUIC's TLS conflicts with PSK encryption)
+/// - Optional PSK for swarm isolation (applied via PnetConfig on TCP transport)
+/// - Up to 7 composed behaviours (kad, mdns, relay [optional], dcutr, autonat, identify, ping)
 /// - 60s idle connection timeout
-pub fn build_swarm(keypair: libp2p::identity::Keypair) -> Result<Swarm<AetherBehaviour>, NetworkError> {
+///
+/// PSK Implementation: Uses .with_other_transport() to manually build TCP transport with
+/// conditional PSK wrapping (pattern from libp2p ipfs-private example). PSK swarms are
+/// TCP-only because QUIC has built-in TLS that conflicts with XSalsa20 PSK encryption.
+/// relay_client is disabled for PSK swarms via Toggle.
+pub fn build_swarm(
+    keypair: libp2p::identity::Keypair,
+    psk: Option<libp2p::pnet::PreSharedKey>,
+) -> Result<Swarm<AetherBehaviour>, NetworkError> {
     let peer_id = PeerId::from_public_key(&keypair.public());
 
-    let swarm = SwarmBuilder::with_existing_identity(keypair)
-        .with_tokio()
-        .with_tcp(
-            tcp::Config::default(),
-            noise::Config::new,
-            yamux::Config::default,
-        )
-        .map_err(|e| NetworkError::TransportInit(format!("TCP transport failed: {}", e)))?
-        .with_quic()
-        .with_relay_client(noise::Config::new, yamux::Config::default)
-        .map_err(|e| NetworkError::TransportInit(format!("Relay client init failed: {}", e)))?
-        .with_behaviour(|key: &libp2p::identity::Keypair, relay_client| {
-            // Create Kademlia DHT with in-memory store
-            let kademlia = kad::Behaviour::new(
-                peer_id,
-                kad::store::MemoryStore::new(peer_id),
-            );
+    let swarm = if let Some(psk_key) = psk {
+        // PSK swarm: TCP-only with PnetConfig encryption layer
+        // QUIC is incompatible with PSK (QUIC has TLS, PSK adds XSalsa20 layer)
+        SwarmBuilder::with_existing_identity(keypair)
+            .with_tokio()
+            .with_other_transport(|key| {
+                let noise_config = noise::Config::new(key).unwrap();
+                let yamux_config = yamux::Config::default();
 
-            // Create mDNS for LAN discovery
-            let mdns = mdns::tokio::Behaviour::new(
-                mdns::Config::default(),
-                peer_id,
-            )
-            .map_err(|e| format!("mDNS init failed: {}", e))?;
+                // Build base TCP transport
+                let base_transport = tcp::tokio::Transport::new(tcp::Config::default());
 
-            // Create autonat for NAT detection
-            let autonat = autonat::Behaviour::new(
-                peer_id,
-                Default::default(),
-            );
+                // Wrap with PSK encryption using PnetConfig
+                let psk_transport = base_transport
+                    .and_then(move |socket, _| PnetConfig::new(psk_key).handshake(socket));
 
-            // Create identify for protocol identification
-            let identify = identify::Behaviour::new(
-                identify::Config::new("/aether/1.0.0".to_string(), key.public()),
-            );
-
-            // Create DCUTR for hole-punching
-            let dcutr = dcutr::Behaviour::new(peer_id);
-
-            // Create ping for keepalive
-            let ping = ping::Behaviour::default();
-
-            Ok(AetherBehaviour {
-                kademlia,
-                mdns,
-                relay_client,
-                dcutr,
-                autonat,
-                identify,
-                ping,
+                // Chain authentication and multiplexing
+                psk_transport
+                    .upgrade(Version::V1Lazy)
+                    .authenticate(noise_config)
+                    .multiplex(yamux_config)
             })
-        })
-        .map_err(|e| NetworkError::SwarmStart(format!("Behaviour creation failed: {}", e)))?
-        .with_swarm_config(|cfg: libp2p::swarm::Config| {
-            cfg.with_idle_connection_timeout(Duration::from_secs(60))
-        })
-        .build();
+            .map_err(|e| NetworkError::TransportInit(format!("PSK TCP transport failed: {}", e)))?
+            .with_behaviour(|key: &libp2p::identity::Keypair| {
+                // Create Kademlia DHT with in-memory store
+                let kademlia = kad::Behaviour::new(
+                    peer_id,
+                    kad::store::MemoryStore::new(peer_id),
+                );
+
+                // Create mDNS for LAN discovery (works with PSK - same L2 network)
+                let mdns = mdns::tokio::Behaviour::new(
+                    mdns::Config::default(),
+                    peer_id,
+                )
+                .map_err(|e| format!("mDNS init failed: {}", e))?;
+
+                // Create autonat for NAT detection
+                let autonat = autonat::Behaviour::new(
+                    peer_id,
+                    Default::default(),
+                );
+
+                // Create identify for protocol identification
+                let identify = identify::Behaviour::new(
+                    identify::Config::new("/aether/1.0.0".to_string(), key.public()),
+                );
+
+                // Create DCUTR for hole-punching
+                let dcutr = dcutr::Behaviour::new(peer_id);
+
+                // Create ping for keepalive
+                let ping = ping::Behaviour::default();
+
+                // No relay_client for PSK swarms (QUIC not available)
+                Ok(AetherBehaviour {
+                    kademlia,
+                    mdns,
+                    relay_client: Toggle::from(None),
+                    dcutr,
+                    autonat,
+                    identify,
+                    ping,
+                })
+            })
+            .map_err(|e| NetworkError::SwarmStart(format!("Behaviour creation failed: {}", e)))?
+            .with_swarm_config(|cfg: libp2p::swarm::Config| {
+                cfg.with_idle_connection_timeout(Duration::from_secs(60))
+            })
+            .build()
+    } else {
+        // Open swarm: TCP + QUIC + relay for maximum connectivity
+        SwarmBuilder::with_existing_identity(keypair)
+            .with_tokio()
+            .with_tcp(
+                tcp::Config::default(),
+                noise::Config::new,
+                yamux::Config::default,
+            )
+            .map_err(|e| NetworkError::TransportInit(format!("TCP transport failed: {}", e)))?
+            .with_quic()
+            .with_relay_client(noise::Config::new, yamux::Config::default)
+            .map_err(|e| NetworkError::TransportInit(format!("Relay client init failed: {}", e)))?
+            .with_behaviour(|key: &libp2p::identity::Keypair, relay_client| {
+                // Create Kademlia DHT with in-memory store
+                let kademlia = kad::Behaviour::new(
+                    peer_id,
+                    kad::store::MemoryStore::new(peer_id),
+                );
+
+                // Create mDNS for LAN discovery
+                let mdns = mdns::tokio::Behaviour::new(
+                    mdns::Config::default(),
+                    peer_id,
+                )
+                .map_err(|e| format!("mDNS init failed: {}", e))?;
+
+                // Create autonat for NAT detection
+                let autonat = autonat::Behaviour::new(
+                    peer_id,
+                    Default::default(),
+                );
+
+                // Create identify for protocol identification
+                let identify = identify::Behaviour::new(
+                    identify::Config::new("/aether/1.0.0".to_string(), key.public()),
+                );
+
+                // Create DCUTR for hole-punching
+                let dcutr = dcutr::Behaviour::new(peer_id);
+
+                // Create ping for keepalive
+                let ping = ping::Behaviour::default();
+
+                Ok(AetherBehaviour {
+                    kademlia,
+                    mdns,
+                    relay_client: Toggle::from(Some(relay_client)),
+                    dcutr,
+                    autonat,
+                    identify,
+                    ping,
+                })
+            })
+            .map_err(|e| NetworkError::SwarmStart(format!("Behaviour creation failed: {}", e)))?
+            .with_swarm_config(|cfg: libp2p::swarm::Config| {
+                cfg.with_idle_connection_timeout(Duration::from_secs(60))
+            })
+            .build()
+    };
 
     Ok(swarm)
 }
