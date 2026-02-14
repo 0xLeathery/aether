@@ -66,3 +66,34 @@ export async function startNetwork(): Promise<void> {
 export function onPeerStatusUpdate(callback: (update: PeerStatusUpdate) => void): Promise<UnlistenFn> {
   return listen<PeerStatusUpdate>('peer-status', (event) => callback(event.payload));
 }
+
+// Swarm types
+export interface Channel {
+  id: string;
+  name: string;
+}
+
+export interface SwarmMetadata {
+  id: string;
+  name: string;
+  psk_hex: string;
+  created_at: number;
+  channels: Channel[];
+}
+
+// Swarm commands
+export async function createSwarm(name: string): Promise<string> {
+  return invoke<string>('create_swarm', { name });
+}
+
+export async function joinSwarm(uri: string, name: string): Promise<string> {
+  return invoke<string>('join_swarm', { uri, name });
+}
+
+export async function listSwarms(): Promise<SwarmMetadata[]> {
+  return invoke<SwarmMetadata[]>('list_swarms');
+}
+
+export async function switchSwarm(swarmId: string): Promise<void> {
+  return invoke<void>('switch_swarm', { swarmId });
+}
