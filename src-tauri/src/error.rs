@@ -53,3 +53,28 @@ impl serde::Serialize for NetworkError {
         serializer.serialize_str(&self.to_string())
     }
 }
+
+#[derive(Debug, Error)]
+pub enum SwarmError {
+    #[error("Invalid aether:// URI: {0}")]
+    InvalidUri(String),
+    #[error("Invalid key length (expected 32 bytes)")]
+    InvalidKeyLength,
+    #[error("Invalid hex encoding: {0}")]
+    InvalidHex(String),
+    #[error("Already joined this swarm")]
+    AlreadyJoined,
+    #[error("Swarm not found: {0}")]
+    NotFound(String),
+    #[error("Storage error: {0}")]
+    StorageError(String),
+}
+
+impl serde::Serialize for SwarmError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}

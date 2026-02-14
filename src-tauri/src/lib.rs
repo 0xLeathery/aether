@@ -2,6 +2,7 @@ mod commands;
 mod error;
 mod identity;
 mod network;
+mod swarm;
 
 use tauri::Manager;
 
@@ -9,6 +10,7 @@ use tauri::Manager;
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_store::Builder::new().build())
         .manage(std::sync::Mutex::new(network::NetworkService::new()))
         .invoke_handler(tauri::generate_handler![
             commands::identity::has_identity,
