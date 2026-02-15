@@ -1,6 +1,7 @@
 use base64::Engine;
 use keyring::Entry;
 
+use super::keychain_acl;
 use crate::error::IdentityError;
 
 const SERVICE_NAME: &str = "com.aether.identity";
@@ -16,6 +17,8 @@ pub fn store_secret_key(secret_bytes: &[u8]) -> Result<(), IdentityError> {
     entry.set_password(&encoded).map_err(|e| {
         IdentityError::KeychainDenied(format!("Failed to store key: {}", e))
     })?;
+
+    keychain_acl::add_app_to_keychain_acl(SERVICE_NAME, SECRET_KEY_USERNAME);
 
     Ok(())
 }

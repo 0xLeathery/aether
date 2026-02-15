@@ -1,5 +1,6 @@
 use keyring::Entry;
 
+use super::keychain_acl;
 use crate::error::IdentityError;
 
 const SERVICE_NAME: &str = "com.aether.identity";
@@ -19,6 +20,8 @@ pub fn store_display_name(name: &str) -> Result<(), IdentityError> {
     entry.set_password(trimmed).map_err(|e| {
         IdentityError::KeychainDenied(format!("Failed to store display name: {}", e))
     })?;
+
+    keychain_acl::add_app_to_keychain_acl(SERVICE_NAME, DISPLAY_NAME_USERNAME);
 
     Ok(())
 }
