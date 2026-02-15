@@ -2,8 +2,6 @@ use rand::rngs::OsRng;
 use rand::RngCore;
 use sha2::{Digest, Sha256};
 
-use crate::error::SwarmError;
-
 /// SwarmKey wraps a 32-byte pre-shared key for swarm isolation
 #[derive(Clone)]
 pub struct SwarmKey([u8; 32]);
