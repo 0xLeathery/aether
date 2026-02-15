@@ -65,9 +65,6 @@ impl NetworkService {
         // Build swarm (no PSK - open network)
         let mut swarm = swarm::build_swarm(keypair, None)?;
 
-        // Start listening (with QUIC for open swarms)
-        swarm::start_listening(&mut swarm, true)?;
-
         // Create command channel
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();
         self.cmd_tx = Some(cmd_tx);
@@ -78,6 +75,9 @@ impl NetworkService {
 
         // Spawn event loop in background
         tauri::async_runtime::spawn(async move {
+            // Start listening INSIDE async context (with QUIC for open swarms)
+            swarm::start_listening(&mut swarm, true).expect("Failed to start listening");
+
             loop {
                 tokio::select! {
                     // Handle swarm events
@@ -199,9 +199,6 @@ impl NetworkService {
         // Build swarm with PSK
         let mut swarm = swarm::build_swarm(keypair, Some(psk))?;
 
-        // Start listening (TCP-only for PSK swarms)
-        swarm::start_listening(&mut swarm, false)?;
-
         // Create command channel
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();
         self.cmd_tx = Some(cmd_tx);
@@ -212,6 +209,9 @@ impl NetworkService {
 
         // Spawn event loop in background (same logic as start())
         tauri::async_runtime::spawn(async move {
+            // Start listening INSIDE async context (TCP-only for PSK swarms)
+            swarm::start_listening(&mut swarm, false).expect("Failed to start listening");
+
             loop {
                 tokio::select! {
                     // Handle swarm events
