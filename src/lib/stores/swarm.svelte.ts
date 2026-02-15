@@ -10,17 +10,20 @@ async function initialize() {
   error = null;
 
   try {
+    // Load swarm metadata WITHOUT auto-selecting (defers network restart)
     swarms = await listSwarms();
-
-    // If swarms exist and no active swarm, auto-select the first one
-    if (swarms.length > 0 && !activeSwarm) {
-      await selectSwarm(swarms[0].id);
-    }
   } catch (err) {
     error = err instanceof Error ? err.message : 'Failed to initialize swarms';
     console.error('Swarm initialization error:', err);
   } finally {
     loading = false;
+  }
+}
+
+async function activateDefaultSwarm() {
+  // Auto-select first swarm if available (called after network starts)
+  if (swarms.length > 0 && !activeSwarm) {
+    await selectSwarm(swarms[0].id);
   }
 }
 
@@ -105,6 +108,7 @@ export const swarmStore = {
   get loading() { return loading; },
   get error() { return error; },
   initialize,
+  activateDefaultSwarm,
   createNewSwarm,
   joinExistingSwarm,
   selectSwarm,

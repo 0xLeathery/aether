@@ -15,7 +15,11 @@
       // Identity exists, initialize network and swarms
       await networkStore.initialize();
       await networkStore.start();
+
+      // Load swarms, then activate default swarm (defers network restart until after Tokio runtime ready)
       await swarmStore.initialize();
+      await swarmStore.activateDefaultSwarm();
+
       appState = 'app';
     } else {
       appState = 'setup';
@@ -25,7 +29,11 @@
   async function handleSetupComplete() {
     // After identity creation, start the network and initialize swarms
     await networkStore.start();
+
+    // Load swarms, then activate default swarm (defers network restart until after Tokio runtime ready)
     await swarmStore.initialize();
+    await swarmStore.activateDefaultSwarm();
+
     appState = 'app';
   }
 </script>
