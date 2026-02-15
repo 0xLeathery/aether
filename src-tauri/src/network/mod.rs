@@ -65,8 +65,8 @@ impl NetworkService {
         // Build swarm (no PSK - open network)
         let mut swarm = swarm::build_swarm(keypair, None)?;
 
-        // Start listening
-        swarm::start_listening(&mut swarm)?;
+        // Start listening (with QUIC for open swarms)
+        swarm::start_listening(&mut swarm, true)?;
 
         // Create command channel
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();
@@ -199,8 +199,8 @@ impl NetworkService {
         // Build swarm with PSK
         let mut swarm = swarm::build_swarm(keypair, Some(psk))?;
 
-        // Start listening
-        swarm::start_listening(&mut swarm)?;
+        // Start listening (TCP-only for PSK swarms)
+        swarm::start_listening(&mut swarm, false)?;
 
         // Create command channel
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();

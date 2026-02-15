@@ -164,15 +164,21 @@ pub fn build_swarm(
     Ok(swarm)
 }
 
-/// Start listening on QUIC and TCP addresses
+/// Start listening on network addresses
 ///
-/// Listens on:
+/// PSK swarms (TCP-only):
+/// - /ip4/0.0.0.0/tcp/0 (TCP on random port)
+///
+/// Open swarms (TCP + QUIC):
 /// - /ip4/0.0.0.0/udp/0/quic-v1 (QUIC on random port)
 /// - /ip4/0.0.0.0/tcp/0 (TCP on random port)
-pub fn start_listening(swarm: &mut Swarm<AetherBehaviour>) -> Result<(), NetworkError> {
-    swarm
-        .listen_on("/ip4/0.0.0.0/udp/0/quic-v1".parse().unwrap())
-        .map_err(|e| NetworkError::ListenFailed(format!("QUIC listen failed: {}", e)))?;
+pub fn start_listening(swarm: &mut Swarm<AetherBehaviour>, use_quic: bool) -> Result<(), NetworkError> {
+    // QUIC only for open swarms (PSK swarms are TCP-only)
+    if use_quic {
+        swarm
+            .listen_on("/ip4/0.0.0.0/udp/0/quic-v1".parse().unwrap())
+            .map_err(|e| NetworkError::ListenFailed(format!("QUIC listen failed: {}", e)))?;
+    }
 
     swarm
         .listen_on("/ip4/0.0.0.0/tcp/0".parse().unwrap())
