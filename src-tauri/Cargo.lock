@@ -54,7 +54,6 @@ dependencies = [
  "keyring",
  "libp2p",
  "rand 0.8.5",
- "security-framework 3.5.1",
  "serde",
  "serde_json",
  "sha2",
