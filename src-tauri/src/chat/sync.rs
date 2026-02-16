@@ -23,6 +23,13 @@ impl PeerSyncStates {
         }
     }
 
+    /// Remove all sync states for channels belonging to a swarm
+    pub fn remove_swarm(&mut self, swarm_id: &str) {
+        let prefix = format!("{}/", swarm_id);
+        self.states
+            .retain(|(_, channel_key), _| !channel_key.starts_with(&prefix));
+    }
+
     /// Get or create sync state for a peer-channel pair
     pub fn get_or_create(&mut self, peer_id: PeerId, channel_key: String) -> &mut SyncState {
         self.states

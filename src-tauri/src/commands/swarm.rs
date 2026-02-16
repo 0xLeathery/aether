@@ -1,9 +1,12 @@
-use tauri::{AppHandle, State};
+use std::sync::Arc;
 use std::sync::Mutex;
+use tauri::{AppHandle, Emitter, Manager, State};
 
+use crate::chat::ChatService;
 use crate::error::SwarmError;
 use crate::network::NetworkService;
 use crate::swarm::{self, Channel, SwarmKey, SwarmMetadata};
+use crate::voice::VoiceSession;
 
 /// Create a new swarm with generated PSK
 #[tauri::command]
@@ -107,4 +110,72 @@ pub fn switch_swarm(
         .map_err(|e| SwarmError::StorageError(format!("Failed to start network: {}", e)))?;
 
     Ok(())
+}
+
+/// Rename a swarm locally
+#[tauri::command]
+pub fn rename_swarm(app: AppHandle, swarm_id: String, new_name: String) -> Result<(), String> {
+    let mut metadata =
+        swarm::storage::get_swarm(&app, &swarm_id).map_err(|e| e.to_string())?;
+    metadata.name = new_name;
+    swarm::storage::save_swarm(&app, &metadata).map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+/// Leave a swarm with full ordered cleanup
+///
+/// Cleanup order: voice -> network -> chat docs -> disk files -> store -> event
+#[tauri::command]
+pub async fn leave_swarm(
+    app: AppHandle,
+    network: State<'_, Mutex<NetworkService>>,
+    voice_session: State<'_, tokio::sync::Mutex<VoiceSession>>,
+    chat_service: State<'_, Arc<tokio::sync::Mutex<ChatService>>>,
+    swarm_id: String,
+) -> Result<(), String> {
+    // Step 1: Leave voice session if active
+    {
+        let mut session = voice_session.lock().await;
+        if session.is_in_session() {
+            session.leave(app.clone()).await;
+        }
+    }
+
+    // Step 2: Stop network service (closes all streams, terminates sync tasks)
+    // std::sync::Mutex dropped before any .await
+    {
+        let mut network_service = network.lock().unwrap();
+        network_service.stop();
+    }
+
+    // Step 3: Clear in-memory chat documents for this swarm
+    {
+        let mut service = chat_service.lock().await;
+        service.remove_swarm_documents(&swarm_id);
+    }
+
+    // Step 4: Delete Automerge files from disk
+    if let Ok(data_dir) = app.path().app_data_dir() {
+        let swarm_chat_dir = data_dir.join("chat").join(&swarm_id);
+        if swarm_chat_dir.exists() {
+            let _ = std::fs::remove_dir_all(&swarm_chat_dir);
+        }
+    }
+
+    // Step 5: Remove swarm metadata from store
+    swarm::storage::delete_swarm(&app, &swarm_id).map_err(|e| e.to_string())?;
+
+    // Step 6: Emit deletion event to frontend
+    let _ = app.emit("swarm-deleted", &swarm_id);
+
+    Ok(())
+}
+
+/// Get the invite URI for a swarm
+#[tauri::command]
+pub fn get_invite_uri(app: AppHandle, swarm_id: String) -> Result<String, String> {
+    let metadata =
+        swarm::storage::get_swarm(&app, &swarm_id).map_err(|e| e.to_string())?;
+    // psk_hex already contains the full aether:// URI
+    Ok(metadata.psk_hex.clone())
 }

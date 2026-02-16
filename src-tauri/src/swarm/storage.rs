@@ -70,6 +70,21 @@ pub fn get_swarm(app: &AppHandle, swarm_id: &str) -> Result<SwarmMetadata, Swarm
     Ok(metadata)
 }
 
+/// Delete a swarm from the store
+pub fn delete_swarm(app: &AppHandle, swarm_id: &str) -> Result<(), SwarmError> {
+    let store = app
+        .store("swarms.json")
+        .map_err(|e| SwarmError::StorageError(format!("Failed to access store: {}", e)))?;
+
+    store.delete(swarm_id);
+
+    store
+        .save()
+        .map_err(|e| SwarmError::StorageError(format!("Failed to save store: {}", e)))?;
+
+    Ok(())
+}
+
 /// Check if swarm exists
 pub fn has_swarm(app: &AppHandle, swarm_id: &str) -> Result<bool, SwarmError> {
     let store = app

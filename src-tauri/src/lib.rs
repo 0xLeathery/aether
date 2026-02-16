@@ -1,5 +1,6 @@
 mod chat;
 mod commands;
+mod contacts;
 mod error;
 mod identity;
 mod network;
@@ -29,11 +30,17 @@ pub fn run() {
             commands::swarm::join_swarm,
             commands::swarm::list_swarms,
             commands::swarm::switch_swarm,
+            commands::swarm::rename_swarm,
+            commands::swarm::leave_swarm,
+            commands::swarm::get_invite_uri,
             commands::voice::join_voice,
             commands::voice::leave_voice,
             commands::voice::get_voice_status,
             commands::chat::send_message,
             commands::chat::get_messages,
+            commands::contacts::set_petname,
+            commands::contacts::remove_petname,
+            commands::contacts::get_contacts,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

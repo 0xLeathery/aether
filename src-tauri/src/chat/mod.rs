@@ -120,6 +120,16 @@ impl ChatService {
         Ok(msg)
     }
 
+    /// Remove all in-memory documents and sync states for a swarm
+    ///
+    /// Called during leave_swarm cleanup. Removes all entries from the
+    /// documents HashMap and sync_states whose key starts with "swarm_id/".
+    pub fn remove_swarm_documents(&mut self, swarm_id: &str) {
+        let prefix = format!("{}/", swarm_id);
+        self.documents.retain(|key, _| !key.starts_with(&prefix));
+        self.sync_states.remove_swarm(swarm_id);
+    }
+
     /// Get all messages for a channel sorted by timestamp
     pub fn get_messages(
         &mut self,

@@ -105,6 +105,23 @@ impl serde::Serialize for VoiceError {
 }
 
 #[derive(Debug, Error)]
+pub enum ContactError {
+    #[error("Contact not found: {0}")]
+    NotFound(String),
+    #[error("Storage error: {0}")]
+    StorageError(String),
+}
+
+impl serde::Serialize for ContactError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+#[derive(Debug, Error)]
 pub enum ChatError {
     #[error("Document not found: {0}")]
     DocumentNotFound(String),
