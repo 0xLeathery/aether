@@ -6,7 +6,7 @@ mod network;
 mod swarm;
 mod voice;
 
-use tauri::Manager;
+use std::sync::Arc;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -16,7 +16,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .manage(std::sync::Mutex::new(network::NetworkService::new()))
         .manage(tokio::sync::Mutex::new(voice::VoiceSession::new()))
-        .manage(tokio::sync::Mutex::new(chat::ChatService::new()))
+        .manage(Arc::new(tokio::sync::Mutex::new(chat::ChatService::new())))
         .invoke_handler(tauri::generate_handler![
             commands::identity::has_identity,
             commands::identity::create_identity,
@@ -32,6 +32,8 @@ pub fn run() {
             commands::voice::join_voice,
             commands::voice::leave_voice,
             commands::voice::get_voice_status,
+            commands::chat::send_message,
+            commands::chat::get_messages,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
