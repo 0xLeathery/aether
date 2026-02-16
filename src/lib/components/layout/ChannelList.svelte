@@ -1,6 +1,8 @@
 <script lang="ts">
   import { swarmStore } from '../../stores/swarm.svelte';
   import { chatStore } from '../../stores/chat.svelte';
+  import { unreadStore } from '../../stores/unread.svelte';
+  import { getMessages } from '../../tauri';
   import CreateChannelDialog from '../channel/CreateChannelDialog.svelte';
   import ChannelContextMenu from '../channel/ChannelContextMenu.svelte';
   import DeleteChannelDialog from '../channel/DeleteChannelDialog.svelte';
@@ -34,8 +36,6 @@
   }
 
   function handleContextMenu(event: MouseEvent, channel: { id: string; name: string }) {
-    if (channel.id === 'general' || channel.id === 'voice') return;
-    if (!swarmStore.isCreator) return;
     event.preventDefault();
     contextMenu = {
       x: event.clientX,
@@ -43,6 +43,13 @@
       channelId: channel.id,
       channelName: channel.name,
     };
+  }
+
+  async function handleMarkAsRead() {
+    if (!swarmStore.activeSwarm || !contextMenu) return;
+    const msgs = await getMessages(swarmStore.activeSwarm.id, contextMenu.channelId);
+    await unreadStore.markRead(swarmStore.activeSwarm.id, contextMenu.channelId, msgs.length);
+    contextMenu = null;
   }
 
   function startRename(channelId: string, currentName: string) {
@@ -121,6 +128,12 @@
           >
             <span class="channel-hash">#</span>
             <span class="channel-name">{channel.name}</span>
+            {#if swarmStore.activeSwarm && unreadStore.hasUnread(swarmStore.activeSwarm.id, channel.id)}
+              <span
+                class="unread-dot"
+                class:mention={unreadStore.hasMention(swarmStore.activeSwarm.id, channel.id)}
+              ></span>
+            {/if}
           </button>
         {/if}
       {/each}
@@ -138,6 +151,8 @@
     y={contextMenu.y}
     channelId={contextMenu.channelId}
     channelName={contextMenu.channelName}
+    isCreator={swarmStore.isCreator}
+    onMarkRead={handleMarkAsRead}
     onRename={() => startRename(contextMenu!.channelId, contextMenu!.channelName)}
     onDelete={() => startDelete(contextMenu!.channelId, contextMenu!.channelName)}
     onClose={() => contextMenu = null}
@@ -264,6 +279,19 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .unread-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .unread-dot.mention {
+    background: var(--accent-amber, #ffb000);
   }
 
   .channel-edit {

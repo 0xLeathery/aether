@@ -3,6 +3,7 @@
   import MessageList from './MessageList.svelte';
   import MessageInput from './MessageInput.svelte';
   import { chatStore } from '../../stores/chat.svelte';
+  import { unreadStore } from '../../stores/unread.svelte';
 
   let { swarmId, channelId, currentUserKey }: {
     swarmId: string;
@@ -19,7 +20,12 @@
 
     (async () => {
       await chatStore.initialize();
+      await unreadStore.initialize(currentUserKey);
       await chatStore.loadMessages(_swarm, _channel);
+      // Clear unread when viewing channel
+      if (chatStore.messages.length > 0) {
+        unreadStore.markRead(_swarm, _channel, chatStore.messages.length);
+      }
     })();
   });
 

@@ -1,16 +1,23 @@
 <script lang="ts">
-  let { x, y, channelId, channelName, onRename, onDelete, onClose }: {
+  let { x, y, channelId, channelName, isCreator, onRename, onDelete, onMarkRead, onClose }: {
     x: number;
     y: number;
     channelId: string;
     channelName: string;
+    isCreator: boolean;
     onRename: () => void;
     onDelete: () => void;
+    onMarkRead: () => void;
     onClose: () => void;
   } = $props();
 
   let clampedX = $derived(Math.min(x, (typeof window !== 'undefined' ? window.innerWidth : 800) - 160));
   let clampedY = $derived(Math.min(y, (typeof window !== 'undefined' ? window.innerHeight : 600) - 80));
+
+  function handleMarkRead() {
+    onMarkRead();
+    onClose();
+  }
 
   function handleRename() {
     onRename();
@@ -30,12 +37,17 @@
   style="left: {clampedX}px; top: {clampedY}px;"
   onclick={(e) => e.stopPropagation()}
 >
-  <button class="menu-item" onclick={handleRename}>
-    Rename
+  <button class="menu-item" onclick={handleMarkRead}>
+    Mark as read
   </button>
-  <button class="menu-item menu-item--danger" onclick={handleDelete}>
-    Delete
-  </button>
+  {#if isCreator && channelId !== 'general' && channelId !== 'voice'}
+    <button class="menu-item" onclick={handleRename}>
+      Rename
+    </button>
+    <button class="menu-item menu-item--danger" onclick={handleDelete}>
+      Delete
+    </button>
+  {/if}
 </div>
 
 <style>

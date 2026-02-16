@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { SwarmMetadata } from '../../tauri';
+  import { unreadStore } from '../../stores/unread.svelte';
 
   let {
     swarms,
@@ -29,7 +30,13 @@
           class:active={swarm.id === activeSwarmId}
           onclick={() => onSelect(swarm.id)}
         >
-          {swarm.name}
+          <span class="swarm-name">{swarm.name}</span>
+          {#if unreadStore.hasSwarmUnread(swarm.id)}
+            <span
+              class="swarm-unread-dot"
+              class:mention={unreadStore.hasSwarmMention(swarm.id)}
+            ></span>
+          {/if}
         </button>
       {/each}
     </div>
@@ -87,9 +94,28 @@
     cursor: pointer;
     transition: all 0.2s ease;
     margin-bottom: 0.25rem;
-    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .swarm-name {
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .swarm-unread-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .swarm-unread-dot.mention {
+    background: var(--accent-amber, #ffb000);
   }
 
   .swarm-button:hover {
