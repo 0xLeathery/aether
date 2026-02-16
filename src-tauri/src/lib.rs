@@ -16,6 +16,7 @@ pub fn run() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .manage(std::sync::Mutex::new(network::NetworkService::new()))
         .manage(tokio::sync::Mutex::new(voice::VoiceSession::new()))
+        .manage(tokio::sync::Mutex::new(chat::ChatService::new()))
         .invoke_handler(tauri::generate_handler![
             commands::identity::has_identity,
             commands::identity::create_identity,
