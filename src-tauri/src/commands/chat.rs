@@ -14,6 +14,7 @@ pub struct ChatMessageResponse {
     pub sender_name: String,
     pub content: String,
     pub timestamp: i64,
+    pub mentions: Vec<String>,
 }
 
 impl From<ChatMessage> for ChatMessageResponse {
@@ -24,6 +25,7 @@ impl From<ChatMessage> for ChatMessageResponse {
             sender_name: msg.sender_name,
             content: msg.content,
             timestamp: msg.timestamp,
+            mentions: msg.mentions,
         }
     }
 }
@@ -40,6 +42,7 @@ pub async fn send_message(
     swarm_id: String,
     channel_id: String,
     content: String,
+    mentions: Vec<String>,
 ) -> Result<ChatMessageResponse, String> {
     // Load identity from keychain for sender info
     let secret_bytes = storage::load_secret_key().map_err(|e| format!("Identity error: {}", e))?;
@@ -57,7 +60,7 @@ pub async fn send_message(
     service.set_actor(&sender_key);
 
     let msg = service
-        .send_message(&app, &swarm_id, &channel_id, &sender_key, &sender_name, &content)
+        .send_message(&app, &swarm_id, &channel_id, &sender_key, &sender_name, &content, mentions)
         .map_err(|e| format!("Send error: {}", e))?;
 
     let response = ChatMessageResponse::from(msg);

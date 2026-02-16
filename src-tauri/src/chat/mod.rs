@@ -95,6 +95,7 @@ impl ChatService {
         sender_key: &str,
         sender_name: &str,
         content: &str,
+        mentions: Vec<String>,
     ) -> Result<ChatMessage, ChatError> {
         // Validate content is not empty
         let trimmed = content.trim();
@@ -108,6 +109,7 @@ impl ChatService {
             sender_key.to_string(),
             sender_name.to_string(),
             trimmed.to_string(),
+            mentions,
         );
 
         let doc = self.get_or_load_doc(app, swarm_id, channel_id)?;

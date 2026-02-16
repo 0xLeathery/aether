@@ -223,6 +223,7 @@ export interface ChatMessage {
   sender_name: string;
   content: string;
   timestamp: number;
+  mentions: string[];
 }
 
 export interface ChatMessagesUpdated {
@@ -231,8 +232,8 @@ export interface ChatMessagesUpdated {
 }
 
 // Chat commands
-export async function sendMessage(swarmId: string, channelId: string, content: string): Promise<ChatMessage> {
-  return invoke<ChatMessage>('send_message', { swarmId, channelId, content });
+export async function sendMessage(swarmId: string, channelId: string, content: string, mentions: string[] = []): Promise<ChatMessage> {
+  return invoke<ChatMessage>('send_message', { swarmId, channelId, content, mentions });
 }
 
 export async function getMessages(swarmId: string, channelId: string): Promise<ChatMessage[]> {
