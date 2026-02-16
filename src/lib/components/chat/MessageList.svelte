@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { ChatMessage } from '../../tauri';
   import { contactsStore } from '../../stores/contacts.svelte';
+  import ContactEditor from '../contacts/ContactEditor.svelte';
 
   let { messages, currentUserKey }: {
     messages: ChatMessage[];
@@ -8,6 +9,7 @@
   } = $props();
 
   let scrollContainer: HTMLDivElement | undefined = $state();
+  let editingContact = $state<{ publicKey: string; x: number; y: number } | null>(null);
 
   // Auto-scroll to bottom when messages change
   $effect(() => {
@@ -22,6 +24,51 @@
       });
     }
   });
+
+  interface ContentPart {
+    type: 'text' | 'mention';
+    value: string;
+    publicKey?: string;
+  }
+
+  function renderMentionContent(content: string, mentions: string[]): ContentPart[] {
+    const parts: ContentPart[] = [];
+    const regex = /@\[([a-f0-9]+)\]/g;
+    let lastIndex = 0;
+    let match;
+
+    while ((match = regex.exec(content)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push({ type: 'text', value: content.slice(lastIndex, match.index) });
+      }
+      const pubkeyRef = match[1];
+      // Find the full public key from the mentions array that starts with this prefix
+      const fullKey = mentions.find(m => m.startsWith(pubkeyRef)) ?? pubkeyRef;
+      const displayName = contactsStore.resolveName(fullKey, pubkeyRef.substring(0, 8) + '...');
+      parts.push({ type: 'mention', value: `@${displayName}`, publicKey: fullKey });
+      lastIndex = match.index + match[0].length;
+    }
+
+    if (lastIndex < content.length) {
+      parts.push({ type: 'text', value: content.slice(lastIndex) });
+    }
+
+    return parts.length > 0 ? parts : [{ type: 'text', value: content }];
+  }
+
+  function handleMentionClick(publicKey: string, event: MouseEvent) {
+    event.stopPropagation();
+    editingContact = { publicKey, x: event.clientX, y: event.clientY };
+  }
+
+  function getContactPetname(publicKey: string): string | null {
+    const contact = contactsStore.contacts.find(c => c.public_key_hex === publicKey);
+    return contact?.petname ?? null;
+  }
+
+  function isMentioningMe(msg: ChatMessage): boolean {
+    return (msg.mentions ?? []).includes(currentUserKey);
+  }
 
   function formatTime(timestamp: number): string {
     const date = new Date(timestamp);
@@ -74,7 +121,7 @@
           </span>
         </div>
       {/if}
-      <div class="message-row">
+      <div class="message-row" class:mentioned={isMentioningMe(msg)}>
         <span class="msg-time">{formatTime(msg.timestamp)}</span>
         <span class="msg-sender">
           {getSenderDisplay(msg)}
@@ -82,11 +129,36 @@
             <span class="you-badge">YOU</span>
           {/if}
         </span>
-        <span class="msg-content">{msg.content}</span>
+        <span class="msg-content">
+          {#each renderMentionContent(msg.content, msg.mentions ?? []) as part}
+            {#if part.type === 'mention'}
+              <button
+                class="mention-link"
+                onclick={(e) => handleMentionClick(part.publicKey!, e)}
+              >
+                {part.value}
+              </button>
+            {:else}
+              {part.value}
+            {/if}
+          {/each}
+        </span>
       </div>
     {/each}
   {/if}
 </div>
+
+{#if editingContact}
+  <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+  <div class="mention-editor-backdrop" onclick={() => editingContact = null}></div>
+  <div class="mention-editor-popup" style="left: {editingContact.x}px; top: {editingContact.y}px;">
+    <ContactEditor
+      publicKey={editingContact.publicKey}
+      currentPetname={getContactPetname(editingContact.publicKey)}
+      onClose={() => editingContact = null}
+    />
+  </div>
+{/if}
 
 <style>
   .message-list {
@@ -176,5 +248,42 @@
     color: var(--text-primary);
     word-break: break-word;
     min-width: 0;
+  }
+
+  .message-row.mentioned {
+    border-left: 3px solid var(--accent-amber, #ffb000);
+    background: rgba(255, 176, 0, 0.05);
+    padding-left: calc(0.25rem - 3px);
+    margin-left: -3px;
+  }
+
+  .mention-link {
+    color: var(--accent-amber, #ffb000);
+    font-weight: 600;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .mention-link:hover {
+    text-decoration: underline;
+  }
+
+  .mention-editor-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 199;
+  }
+
+  .mention-editor-popup {
+    position: fixed;
+    z-index: 200;
   }
 </style>
