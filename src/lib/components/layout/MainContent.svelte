@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import Avatar from '../profile/Avatar.svelte';
   import VoicePanel from '../voice/VoicePanel.svelte';
+  import ChatPanel from '../chat/ChatPanel.svelte';
   import { voiceStore } from '../../stores/voice.svelte';
   import { swarmStore } from '../../stores/swarm.svelte';
 
@@ -10,31 +11,73 @@
   onMount(() => {
     voiceStore.initialize();
   });
+
+  // Derive active channel from the active swarm's first channel
+  let activeChannelId = $derived(
+    swarmStore.activeSwarm?.channels?.[0]?.id ?? null
+  );
 </script>
 
-<div class="main-content">
-  <div class="welcome-display">
-    <Avatar publicKeyHex={identity.public_key_hex} size={100} />
-    <h1>Welcome to Aether</h1>
-    <code class="short-id">{identity.short_id}</code>
-    <p class="tagline">The Sovereign Node</p>
-
-    {#if swarmStore.activeSwarm}
-      <div class="voice-section">
-        <VoicePanel identity={identity} />
-      </div>
-    {/if}
+{#if swarmStore.activeSwarm && activeChannelId}
+  <div class="main-content main-content--chat">
+    <div class="voice-bar">
+      <VoicePanel identity={identity} />
+    </div>
+    <div class="chat-area">
+      <ChatPanel
+        swarmId={swarmStore.activeSwarm.id}
+        channelId={activeChannelId}
+        currentUserKey={identity.public_key_hex}
+      />
+    </div>
   </div>
-</div>
+{:else}
+  <div class="main-content main-content--welcome">
+    <div class="welcome-display">
+      <Avatar publicKeyHex={identity.public_key_hex} size={100} />
+      <h1>Welcome to Aether</h1>
+      <code class="short-id">{identity.short_id}</code>
+      <p class="tagline">The Sovereign Node</p>
+    </div>
+  </div>
+{/if}
 
 <style>
   .main-content {
     flex: 1;
     background: var(--bg-primary);
     display: flex;
+    height: 100vh;
+  }
+
+  .main-content--welcome {
     align-items: center;
     justify-content: center;
-    height: 100vh;
+  }
+
+  .main-content--chat {
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .voice-bar {
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .voice-bar :global(.voice-panel) {
+    max-width: none;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0.5rem 1rem;
+  }
+
+  .chat-area {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+    border-top: 1px solid var(--accent-primary);
   }
 
   .welcome-display {
@@ -68,11 +111,5 @@
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.2em;
-  }
-
-  .voice-section {
-    margin-top: 2rem;
-    width: 100%;
-    max-width: 400px;
   }
 </style>
