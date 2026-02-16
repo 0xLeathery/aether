@@ -5,6 +5,7 @@
   import SwarmSelector from '../swarm/SwarmSelector.svelte';
   import InviteDialog from '../swarm/InviteDialog.svelte';
   import JoinDialog from '../swarm/JoinDialog.svelte';
+  import SwarmSettings from '../swarm/SwarmSettings.svelte';
   import { networkStore } from '../../stores/network.svelte';
   import { swarmStore } from '../../stores/swarm.svelte';
 
@@ -13,6 +14,7 @@
   let showProfile = $state(false);
   let showInvite = $state(false);
   let showJoin = $state(false);
+  let showSwarmSettings = $state(false);
 
   function toggleProfile() {
     showProfile = !showProfile;
@@ -33,8 +35,13 @@
     </div>
   </div>
 
-  <div class="header">
+  <div class="header swarms-header">
     <h2>SWARMS</h2>
+    {#if swarmStore.activeSwarm}
+      <button class="settings-button" onclick={() => showSwarmSettings = true} title="Swarm Settings">
+        [*]
+      </button>
+    {/if}
   </div>
 
   <SwarmSelector
@@ -55,6 +62,13 @@
   <ProfilePopover bind:isOpen={showProfile} />
   <InviteDialog bind:open={showInvite} onClose={() => showInvite = false} />
   <JoinDialog bind:open={showJoin} onClose={() => showJoin = false} />
+
+  {#if showSwarmSettings && swarmStore.activeSwarm}
+    <SwarmSettings
+      swarm={swarmStore.activeSwarm}
+      onClose={() => showSwarmSettings = false}
+    />
+  {/if}
 </div>
 
 <style>
@@ -78,6 +92,29 @@
     color: var(--text-muted);
     letter-spacing: 0.15em;
     font-weight: 500;
+  }
+
+  .swarms-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .settings-button {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.15rem 0.35rem;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+  }
+
+  .settings-button:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
   }
 
   .profile-section {

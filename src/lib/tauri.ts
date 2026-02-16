@@ -98,9 +98,27 @@ export async function switchSwarm(swarmId: string): Promise<void> {
   return invoke<void>('switch_swarm', { swarmId });
 }
 
+export async function renameSwarm(swarmId: string, newName: string): Promise<void> {
+  return invoke<void>('rename_swarm', { swarmId, newName });
+}
+
+export async function leaveSwarm(swarmId: string): Promise<void> {
+  return invoke<void>('leave_swarm', { swarmId });
+}
+
+export async function getInviteUri(swarmId: string): Promise<string> {
+  return invoke<string>('get_invite_uri', { swarmId });
+}
+
+// Swarm event listeners
+export function onSwarmDeleted(callback: (swarmId: string) => void): Promise<UnlistenFn> {
+  return listen<string>('swarm-deleted', (event) => callback(event.payload));
+}
+
 // Voice types
 export interface VoiceStatus {
   active: boolean;
+  muted: boolean;
   participants: string[];
   participant_count: number;
   max_participants: number;
@@ -119,6 +137,10 @@ export async function getVoiceStatus(): Promise<VoiceStatus> {
   return invoke<VoiceStatus>('get_voice_status');
 }
 
+export async function toggleMute(): Promise<boolean> {
+  return invoke<boolean>('toggle_mute');
+}
+
 // Voice event listeners
 export function onVoiceSessionJoined(callback: (participants: string[]) => void): Promise<UnlistenFn> {
   return listen<string[]>('voice-session-joined', (event) => callback(event.payload));
@@ -126,6 +148,31 @@ export function onVoiceSessionJoined(callback: (participants: string[]) => void)
 
 export function onVoiceSessionLeft(callback: () => void): Promise<UnlistenFn> {
   return listen('voice-session-left', () => callback());
+}
+
+export function onVoiceMuteChanged(callback: (muted: boolean) => void): Promise<UnlistenFn> {
+  return listen<boolean>('voice-mute-changed', (event) => callback(event.payload));
+}
+
+// Contact types
+export interface Contact {
+  public_key_hex: string;
+  petname: string | null;
+  notes: string | null;
+  added_at: number;
+}
+
+// Contact commands
+export async function setPetname(publicKey: string, petname: string): Promise<void> {
+  return invoke<void>('set_petname', { publicKey, petname });
+}
+
+export async function removePetname(publicKey: string): Promise<void> {
+  return invoke<void>('remove_petname', { publicKey });
+}
+
+export async function getContacts(): Promise<Contact[]> {
+  return invoke<Contact[]>('get_contacts');
 }
 
 // Chat types
