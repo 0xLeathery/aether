@@ -93,6 +93,7 @@ pub fn build_swarm(
                     autonat,
                     identify,
                     ping,
+                    stream: libp2p_stream::Behaviour::new(),
                 })
             })
             .map_err(|e| NetworkError::SwarmStart(format!("Behaviour creation failed: {}", e)))?
@@ -152,6 +153,7 @@ pub fn build_swarm(
                     autonat,
                     identify,
                     ping,
+                    stream: libp2p_stream::Behaviour::new(),
                 })
             })
             .map_err(|e| NetworkError::SwarmStart(format!("Behaviour creation failed: {}", e)))?

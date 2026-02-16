@@ -2,10 +2,11 @@ use libp2p::{
     autonat, dcutr, identify, kad, mdns, ping, relay,
     swarm::{NetworkBehaviour, behaviour::toggle::Toggle},
 };
+use libp2p_stream as stream;
 
 /// Aether network behaviour composition
 ///
-/// Combines up to 7 libp2p protocols:
+/// Combines up to 8 libp2p protocols:
 /// - kad: Kademlia DHT for peer routing
 /// - mdns: LAN peer discovery
 /// - relay_client: Circuit relay v2 for NAT traversal (disabled for PSK swarms)
@@ -13,6 +14,7 @@ use libp2p::{
 /// - autonat: Automatic NAT detection
 /// - identify: Protocol identification and peer info exchange
 /// - ping: Connection keepalive
+/// - stream: Generic stream protocol for voice and future features
 ///
 /// relay_client is wrapped in Toggle to disable for PSK swarms (QUIC not compatible with PSK)
 #[derive(NetworkBehaviour)]
@@ -24,4 +26,5 @@ pub struct AetherBehaviour {
     pub autonat: autonat::Behaviour,
     pub identify: identify::Behaviour,
     pub ping: ping::Behaviour,
+    pub stream: stream::Behaviour,
 }
