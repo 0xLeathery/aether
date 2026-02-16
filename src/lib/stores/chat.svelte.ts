@@ -55,7 +55,7 @@ async function loadMessages(swarmId: string, channelId: string) {
   }
 }
 
-async function send(content: string) {
+async function send(content: string, mentions: string[] = []) {
   if (!currentSwarmId || !currentChannelId) {
     error = 'No channel selected';
     return;
@@ -65,7 +65,7 @@ async function send(content: string) {
   error = null;
 
   try {
-    const msg = await sendMessage(currentSwarmId, currentChannelId, content);
+    const msg = await sendMessage(currentSwarmId, currentChannelId, content, mentions);
     // Optimistic update: append the returned message (already persisted on backend)
     messages = [...messages, msg];
   } catch (err) {

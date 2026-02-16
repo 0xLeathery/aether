@@ -4,6 +4,8 @@
   import MessageInput from './MessageInput.svelte';
   import { chatStore } from '../../stores/chat.svelte';
   import { unreadStore } from '../../stores/unread.svelte';
+  import { networkStore } from '../../stores/network.svelte';
+  import { contactsStore } from '../../stores/contacts.svelte';
 
   let { swarmId, channelId, currentUserKey }: {
     swarmId: string;
@@ -12,6 +14,27 @@
   } = $props();
 
   let sendError = $state<string | null>(null);
+
+  // Build mentionable peers list from message history + connected peers
+  let mentionPeers = $derived.by(() => {
+    const peerMap = new Map<string, string>(); // publicKey -> displayName
+
+    // Add peers from message history (covers offline peers who have sent messages)
+    for (const msg of chatStore.messages) {
+      if (!peerMap.has(msg.sender_key)) {
+        peerMap.set(msg.sender_key, contactsStore.resolveName(msg.sender_key, msg.sender_name));
+      }
+    }
+
+    // Add currently connected peers
+    for (const peer of networkStore.peers) {
+      if (!peerMap.has(peer.peer_id)) {
+        peerMap.set(peer.peer_id, contactsStore.resolveName(peer.peer_id, peer.peer_id.substring(0, 8) + '...'));
+      }
+    }
+
+    return Array.from(peerMap.entries()).map(([publicKey, displayName]) => ({ publicKey, displayName }));
+  });
 
   // Initialize chat store and load messages when swarm/channel changes
   $effect(() => {
@@ -29,10 +52,10 @@
     })();
   });
 
-  async function handleSend(content: string) {
+  async function handleSend(content: string, mentions: string[]) {
     sendError = null;
     try {
-      await chatStore.send(content);
+      await chatStore.send(content, mentions);
     } catch (err) {
       sendError = err instanceof Error ? err.message : 'Failed to send message';
     }
@@ -52,7 +75,7 @@
     <MessageList messages={chatStore.messages} {currentUserKey} />
   {/if}
 
-  <MessageInput onSend={handleSend} disabled={chatStore.sending} />
+  <MessageInput onSend={handleSend} disabled={chatStore.sending} peers={mentionPeers} />
 
   {#if sendError}
     <div class="send-error">{sendError}</div>
