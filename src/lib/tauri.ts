@@ -79,6 +79,21 @@ export interface SwarmMetadata {
   psk_hex: string;
   created_at: number;
   channels: Channel[];
+  creator_key: string | null;
+}
+
+export interface ChannelInfo {
+  id: string;
+  name: string;
+}
+
+export interface ChannelsUpdated {
+  swarm_id: string;
+}
+
+export interface ChannelDeleted {
+  swarm_id: string;
+  channel_id: string;
 }
 
 // Swarm commands
@@ -113,6 +128,32 @@ export async function getInviteUri(swarmId: string): Promise<string> {
 // Swarm event listeners
 export function onSwarmDeleted(callback: (swarmId: string) => void): Promise<UnlistenFn> {
   return listen<string>('swarm-deleted', (event) => callback(event.payload));
+}
+
+// Channel commands
+export async function createChannel(swarmId: string, name: string): Promise<ChannelInfo> {
+  return invoke<ChannelInfo>('create_channel', { swarmId, name });
+}
+
+export async function renameChannel(swarmId: string, channelId: string, newName: string): Promise<void> {
+  return invoke<void>('rename_channel', { swarmId, channelId, newName });
+}
+
+export async function deleteChannel(swarmId: string, channelId: string): Promise<void> {
+  return invoke<void>('delete_channel', { swarmId, channelId });
+}
+
+export async function listChannels(swarmId: string): Promise<ChannelInfo[]> {
+  return invoke<ChannelInfo[]>('list_channels', { swarmId });
+}
+
+// Channel event listeners
+export function onChannelsUpdated(callback: (update: ChannelsUpdated) => void): Promise<UnlistenFn> {
+  return listen<ChannelsUpdated>('channels-updated', (event) => callback(event.payload));
+}
+
+export function onChannelDeleted(callback: (update: ChannelDeleted) => void): Promise<UnlistenFn> {
+  return listen<ChannelDeleted>('channel-deleted', (event) => callback(event.payload));
 }
 
 // Voice types

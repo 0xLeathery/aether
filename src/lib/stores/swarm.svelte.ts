@@ -7,15 +7,26 @@ import {
   leaveSwarm,
   getInviteUri,
   onSwarmDeleted,
+  createChannel,
+  renameChannel,
+  deleteChannel,
+  listChannels,
+  onChannelsUpdated,
+  onChannelDeleted,
   type SwarmMetadata,
+  type ChannelInfo,
   type UnlistenFn,
 } from '../tauri';
 
 let swarms = $state<SwarmMetadata[]>([]);
 let activeSwarm = $state<SwarmMetadata | null>(null);
+let activeChannelId = $state<string | null>(null);
+let localPublicKey = $state<string | null>(null);
 let loading = $state(false);
 let error = $state<string | null>(null);
 let unlistenDeleted: UnlistenFn | null = null;
+let unlistenChannelsUpdated: UnlistenFn | null = null;
+let unlistenChannelDeleted: UnlistenFn | null = null;
 
 async function initialize() {
   loading = true;
@@ -31,6 +42,32 @@ async function initialize() {
         swarms = swarms.filter(s => s.id !== deletedId);
         if (activeSwarm?.id === deletedId) {
           activeSwarm = null;
+          activeChannelId = null;
+        }
+      });
+    }
+
+    // Listen for channel events
+    if (!unlistenChannelsUpdated) {
+      unlistenChannelsUpdated = await onChannelsUpdated((update) => {
+        if (activeSwarm && update.swarm_id === activeSwarm.id) {
+          refreshChannels(update.swarm_id);
+        }
+      });
+    }
+
+    if (!unlistenChannelDeleted) {
+      unlistenChannelDeleted = await onChannelDeleted((update) => {
+        if (activeSwarm && update.swarm_id === activeSwarm.id) {
+          // Remove channel from local activeSwarm
+          activeSwarm = {
+            ...activeSwarm,
+            channels: activeSwarm.channels.filter(ch => ch.id !== update.channel_id)
+          };
+          // If deleted channel was active, switch to general
+          if (activeChannelId === update.channel_id) {
+            activeChannelId = 'general';
+          }
         }
       });
     }
@@ -39,6 +76,17 @@ async function initialize() {
     console.error('Swarm initialization error:', err);
   } finally {
     loading = false;
+  }
+}
+
+async function refreshChannels(swarmId: string) {
+  try {
+    const channels = await listChannels(swarmId);
+    if (activeSwarm && activeSwarm.id === swarmId) {
+      activeSwarm = { ...activeSwarm, channels };
+    }
+  } catch (err) {
+    console.error('Channel refresh error:', err);
   }
 }
 
@@ -115,6 +163,8 @@ async function selectSwarm(swarmId: string): Promise<void> {
 
     // Set as active swarm
     activeSwarm = swarm;
+    // Always default to general channel on swarm switch
+    activeChannelId = 'general';
   } catch (err) {
     error = err instanceof Error ? err.message : 'Failed to select swarm';
     console.error('Swarm selection error:', err);
@@ -154,6 +204,7 @@ async function leaveSwarmAction(swarmId: string): Promise<void> {
     // Clear activeSwarm if it was the one we left
     if (activeSwarm?.id === swarmId) {
       activeSwarm = null;
+      activeChannelId = null;
     }
   } catch (err) {
     error = err instanceof Error ? err.message : 'Failed to leave swarm';
@@ -172,9 +223,57 @@ async function getInviteUriAction(swarmId: string): Promise<string> {
   }
 }
 
+// Channel CRUD operations
+
+async function createChannelAction(name: string): Promise<ChannelInfo> {
+  if (!activeSwarm) throw new Error('No active swarm');
+  const channel = await createChannel(activeSwarm.id, name);
+  // Optimistic update
+  activeSwarm = {
+    ...activeSwarm,
+    channels: [...activeSwarm.channels, channel]
+  };
+  return channel;
+}
+
+async function renameChannelAction(channelId: string, newName: string): Promise<void> {
+  if (!activeSwarm) throw new Error('No active swarm');
+  await renameChannel(activeSwarm.id, channelId, newName);
+  // Optimistic update
+  activeSwarm = {
+    ...activeSwarm,
+    channels: activeSwarm.channels.map(ch =>
+      ch.id === channelId ? { ...ch, name: newName } : ch
+    )
+  };
+}
+
+async function deleteChannelAction(channelId: string): Promise<void> {
+  if (!activeSwarm) throw new Error('No active swarm');
+  await deleteChannel(activeSwarm.id, channelId);
+  // Optimistic update
+  activeSwarm = {
+    ...activeSwarm,
+    channels: activeSwarm.channels.filter(ch => ch.id !== channelId)
+  };
+  if (activeChannelId === channelId) {
+    activeChannelId = 'general';
+  }
+}
+
+function selectChannel(channelId: string) {
+  activeChannelId = channelId;
+}
+
+function setLocalIdentity(publicKeyHex: string) {
+  localPublicKey = publicKeyHex;
+}
+
 export const swarmStore = {
   get swarms() { return swarms; },
   get activeSwarm() { return activeSwarm; },
+  get activeChannelId() { return activeChannelId; },
+  get isCreator() { return activeSwarm?.creator_key != null && activeSwarm.creator_key === localPublicKey; },
   get loading() { return loading; },
   get error() { return error; },
   initialize,
@@ -182,7 +281,12 @@ export const swarmStore = {
   createNewSwarm,
   joinExistingSwarm,
   selectSwarm,
+  selectChannel,
   renameSwarm: renameSwarmAction,
   leaveSwarm: leaveSwarmAction,
   getInviteUri: getInviteUriAction,
+  createChannel: createChannelAction,
+  renameChannel: renameChannelAction,
+  deleteChannel: deleteChannelAction,
+  setLocalIdentity,
 };
