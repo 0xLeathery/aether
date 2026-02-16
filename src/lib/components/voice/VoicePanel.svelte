@@ -21,6 +21,14 @@
       console.error('Failed to leave voice:', err);
     }
   }
+
+  async function handleToggleMute() {
+    try {
+      await voiceStore.toggleMute();
+    } catch (err) {
+      console.error('Failed to toggle mute:', err);
+    }
+  }
 </script>
 
 <div class="voice-panel">
@@ -49,10 +57,18 @@
 
   {#if voiceStore.active}
     <div class="voice-status">
-      <div class="mic-indicator">
-        <div class="mic-pulse"></div>
-        <span class="mic-label">MIC LIVE</span>
-      </div>
+      <button
+        class="mute-toggle"
+        class:muted={voiceStore.muted}
+        onclick={handleToggleMute}
+      >
+        <div class="mic-indicator" class:muted={voiceStore.muted}>
+          <div class="mic-pulse" class:muted={voiceStore.muted}></div>
+          <span class="mic-label">
+            {voiceStore.muted ? 'MIC MUTED' : 'MIC LIVE'}
+          </span>
+        </div>
+      </button>
 
       {#if voiceStore.participants.length > 0}
         <div class="participant-list">
@@ -161,11 +177,25 @@
     padding-top: 1rem;
   }
 
+  .mute-toggle {
+    width: 100%;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    margin-bottom: 1rem;
+  }
+
+  .mute-toggle:hover {
+    background: var(--bg-tertiary);
+  }
+
   .mic-indicator {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 1rem;
   }
 
   .mic-pulse {
@@ -174,6 +204,11 @@
     background: var(--accent-primary);
     border-radius: 50%;
     animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .mic-pulse.muted {
+    background: #ff4444;
+    animation: none;
   }
 
   @keyframes pulse {
@@ -192,6 +227,10 @@
     color: var(--accent-primary);
     letter-spacing: 0.05em;
     font-weight: bold;
+  }
+
+  .mic-indicator.muted .mic-label {
+    color: #ff4444;
   }
 
   .participant-list {
