@@ -1,5 +1,6 @@
 <script lang="ts">
   import { voiceStore } from '../../stores/voice.svelte';
+  import { contactsStore } from '../../stores/contacts.svelte';
 
   let { identity }: { identity: any } = $props();
 
@@ -75,7 +76,7 @@
           <div class="participant-list-header">Participants:</div>
           {#each voiceStore.participants as peerId}
             <div class="participant-item">
-              <code class="peer-id">{peerId.substring(0, 16)}...</code>
+              <code class="peer-id">{contactsStore.resolveName(peerId, '')}</code>
               {#if peerId.includes(localPeerId)}
                 <span class="self-badge">YOU</span>
               {/if}

@@ -6,8 +6,11 @@
   import InviteDialog from '../swarm/InviteDialog.svelte';
   import JoinDialog from '../swarm/JoinDialog.svelte';
   import SwarmSettings from '../swarm/SwarmSettings.svelte';
+  import ContactsList from '../contacts/ContactsList.svelte';
   import { networkStore } from '../../stores/network.svelte';
   import { swarmStore } from '../../stores/swarm.svelte';
+  import { contactsStore } from '../../stores/contacts.svelte';
+  import { onMount } from 'svelte';
 
   let { identity }: { identity: any } = $props();
 
@@ -15,6 +18,11 @@
   let showInvite = $state(false);
   let showJoin = $state(false);
   let showSwarmSettings = $state(false);
+  let showContacts = $state(false);
+
+  onMount(() => {
+    contactsStore.initialize();
+  });
 
   function toggleProfile() {
     showProfile = !showProfile;
@@ -52,6 +60,13 @@
     onJoinClick={() => showJoin = true}
   />
 
+  <div class="header">
+    <h2>CONTACTS</h2>
+  </div>
+  <button class="contacts-button" onclick={() => showContacts = true}>
+    [ VIEW CONTACTS ]
+  </button>
+
   <div class="profile-section">
     <button class="profile-trigger" onclick={toggleProfile}>
       <Avatar publicKeyHex={identity.public_key_hex} size={32} />
@@ -68,6 +83,11 @@
       swarm={swarmStore.activeSwarm}
       onClose={() => showSwarmSettings = false}
     />
+  {/if}
+
+  {#if showContacts}
+    <div class="modal-backdrop" role="presentation" onclick={() => showContacts = false}></div>
+    <ContactsList onClose={() => showContacts = false} />
   {/if}
 </div>
 
@@ -178,5 +198,35 @@
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.1em;
+  }
+
+  .contacts-button {
+    display: block;
+    width: calc(100% - 2rem);
+    margin: 0.5rem 1rem;
+    padding: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: 3px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: all 0.2s ease;
+    text-align: center;
+  }
+
+  .contacts-button:hover {
+    color: var(--accent-primary);
+    border-color: var(--accent-primary);
+    background: var(--bg-tertiary);
+  }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 199;
   }
 </style>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { ChatMessage } from '../../tauri';
+  import { contactsStore } from '../../stores/contacts.svelte';
 
   let { messages, currentUserKey }: {
     messages: ChatMessage[];
@@ -38,10 +39,7 @@
   }
 
   function getSenderDisplay(msg: ChatMessage): string {
-    if (msg.sender_name && msg.sender_name.length > 0) {
-      return msg.sender_name;
-    }
-    return msg.sender_key.substring(0, 8) + '...';
+    return contactsStore.resolveName(msg.sender_key, msg.sender_name);
   }
 
   function isOwnMessage(msg: ChatMessage): boolean {

@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { PeerInfo } from '../../tauri';
+  import { contactsStore } from '../../stores/contacts.svelte';
+  import ContactEditor from '../contacts/ContactEditor.svelte';
 
   let { peers }: { peers: PeerInfo[] } = $props();
+
+  let editingPeerId = $state<string | null>(null);
 
   function getStatusColor(status: string): string {
     switch (status) {
@@ -16,8 +20,13 @@
     }
   }
 
-  function truncatePeerId(peerId: string): string {
-    return peerId.substring(0, 8) + '...';
+  function getPeerDisplayName(peerId: string): string {
+    return contactsStore.resolveName(peerId, '');
+  }
+
+  function getPeerPetname(peerId: string): string | null {
+    const contact = contactsStore.contacts.find(c => c.public_key_hex === peerId);
+    return contact?.petname ?? null;
   }
 
   function formatStatus(status: string): string {
@@ -34,9 +43,22 @@
     {#each peers as peer}
       <div class="peer-row">
         <div class="status-dot" style="background-color: {getStatusColor(peer.status)}"></div>
-        <span class="peer-id">{truncatePeerId(peer.peer_id)}</span>
+        <span class="peer-id">{getPeerDisplayName(peer.peer_id)}</span>
+        <button class="edit-btn" onclick={() => editingPeerId = peer.peer_id} title="Set petname">
+          [~]
+        </button>
         <span class="peer-status">{formatStatus(peer.status)}</span>
       </div>
+
+      {#if editingPeerId === peer.peer_id}
+        <div class="editor-container">
+          <ContactEditor
+            publicKey={peer.peer_id}
+            currentPetname={getPeerPetname(peer.peer_id)}
+            onClose={() => editingPeerId = null}
+          />
+        </div>
+      {/if}
     {/each}
   </div>
 {/if}
@@ -99,5 +121,33 @@
     font-size: 0.75rem;
     color: var(--text-muted);
     text-transform: capitalize;
+  }
+
+  .edit-btn {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.1rem 0.25rem;
+    transition: color 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  .edit-btn:hover {
+    color: var(--accent-primary);
+  }
+
+  .editor-container {
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+  }
+
+  .editor-container :global(.petname-editor) {
+    position: relative;
+    width: 100%;
   }
 </style>
