@@ -24,6 +24,7 @@ use super::{
 /// receive → decode → jitter buffer → mix → playback (cpal)
 pub struct VoiceSession {
     is_active: Arc<AtomicBool>,
+    is_muted: Arc<AtomicBool>,
     participants: Arc<RwLock<HashSet<PeerId>>>,
     capture_stream: Option<CpalStream>,
     playback_stream: Option<CpalStream>,
@@ -37,6 +38,7 @@ impl VoiceSession {
     pub fn new() -> Self {
         Self {
             is_active: Arc::new(AtomicBool::new(false)),
+            is_muted: Arc::new(AtomicBool::new(false)),
             participants: Arc::new(RwLock::new(HashSet::new())),
             capture_stream: None,
             playback_stream: None,
@@ -44,6 +46,16 @@ impl VoiceSession {
             sequence: Arc::new(AtomicU32::new(0)),
             max_participants: 8,
         }
+    }
+
+    /// Set the mute state
+    pub fn set_muted(&self, muted: bool) {
+        self.is_muted.store(muted, Ordering::Relaxed);
+    }
+
+    /// Check if currently muted
+    pub fn is_muted(&self) -> bool {
+        self.is_muted.load(Ordering::Relaxed)
     }
 
     /// Join a voice session with specified peers
@@ -103,6 +115,7 @@ impl VoiceSession {
         // Spawn encode-and-send task
         {
             let is_active = Arc::clone(&self.is_active);
+            let is_muted = Arc::clone(&self.is_muted);
             let participants = Arc::clone(&self.participants);
             let sequence = Arc::clone(&self.sequence);
             let mut stream_control = stream_control.clone();
@@ -125,6 +138,11 @@ impl VoiceSession {
                         Ok(p) => p,
                         Err(_) => break, // Channel closed
                     };
+
+                    // Mute check -- skip encode and send
+                    if is_muted.load(Ordering::Relaxed) {
+                        continue; // Frame discarded, capture_rx drained
+                    }
 
                     // Encode to Opus
                     let opus_data = match encoder.encode(&pcm) {
@@ -280,6 +298,9 @@ impl VoiceSession {
     pub async fn leave(&mut self, app: AppHandle) {
         // Deactivate session (stops all spawned tasks)
         self.is_active.store(false, Ordering::Relaxed);
+
+        // Reset mute state
+        self.is_muted.store(false, Ordering::Relaxed);
 
         // Drop audio streams (stops cpal)
         self.capture_stream = None;

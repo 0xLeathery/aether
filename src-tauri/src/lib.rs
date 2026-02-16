@@ -36,6 +36,7 @@ pub fn run() {
             commands::voice::join_voice,
             commands::voice::leave_voice,
             commands::voice::get_voice_status,
+            commands::voice::toggle_mute,
             commands::chat::send_message,
             commands::chat::get_messages,
             commands::contacts::set_petname,

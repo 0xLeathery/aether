@@ -1,5 +1,5 @@
 use serde::Serialize;
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Emitter, State};
 
 use crate::error::VoiceError;
 use crate::network::NetworkService;
@@ -9,6 +9,7 @@ use crate::voice::VoiceSession;
 #[derive(Serialize)]
 pub struct VoiceStatus {
     active: bool,
+    muted: bool,
     participants: Vec<String>,
     participant_count: usize,
     max_participants: usize,
@@ -67,6 +68,7 @@ pub async fn join_voice(
     // Return current status
     Ok(VoiceStatus {
         active: session.is_in_session(),
+        muted: session.is_muted(),
         participant_count: session.participant_count(),
         participants: Vec::new(), // Will be populated from events
         max_participants: 8,
@@ -94,8 +96,25 @@ pub async fn get_voice_status(
 
     Ok(VoiceStatus {
         active: session.is_in_session(),
+        muted: session.is_muted(),
         participant_count: session.participant_count(),
         participants: Vec::new(), // Will be populated from events
         max_participants: 8,
     })
+}
+
+/// Toggle microphone mute state
+#[tauri::command]
+pub async fn toggle_mute(
+    app: AppHandle,
+    voice_session: State<'_, tokio::sync::Mutex<VoiceSession>>,
+) -> Result<bool, String> {
+    let session = voice_session.lock().await;
+    if !session.is_in_session() {
+        return Err("Not in a voice session".to_string());
+    }
+    let new_muted = !session.is_muted();
+    session.set_muted(new_muted);
+    let _ = app.emit("voice-mute-changed", new_muted);
+    Ok(new_muted)
 }
