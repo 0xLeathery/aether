@@ -130,6 +130,16 @@ impl ChatService {
         self.sync_states.remove_swarm(swarm_id);
     }
 
+    /// Remove a single channel's document and sync states from memory
+    ///
+    /// Called during delete_channel cleanup. Removes the channel document
+    /// from the in-memory cache and all associated peer sync states.
+    pub fn remove_channel_document(&mut self, swarm_id: &str, channel_id: &str) {
+        let key = format!("{}/{}", swarm_id, channel_id);
+        self.documents.remove(&key);
+        self.sync_states.remove_channel(swarm_id, channel_id);
+    }
+
     /// Get all messages for a channel sorted by timestamp
     pub fn get_messages(
         &mut self,

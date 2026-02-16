@@ -4,6 +4,7 @@ use tauri::{AppHandle, Emitter, Manager, State};
 
 use crate::chat::ChatService;
 use crate::error::SwarmError;
+use crate::identity::{keypair, storage};
 use crate::network::NetworkService;
 use crate::swarm::{self, Channel, SwarmKey, SwarmMetadata};
 use crate::voice::VoiceSession;
@@ -22,17 +23,34 @@ pub fn create_swarm(app: AppHandle, name: String) -> Result<String, SwarmError> 
         .unwrap()
         .as_secs() as i64;
 
-    // Create metadata with General channel
+    // Load identity to get creator public key
+    let secret_bytes = storage::load_secret_key()
+        .map_err(|e| SwarmError::StorageError(format!("Identity error: {}", e)))?;
+    let signing_key = keypair::signing_key_from_bytes(&secret_bytes)
+        .map_err(|e| SwarmError::StorageError(format!("Key error: {}", e)))?;
+    let public_key_hex = keypair::public_key_to_hex(&signing_key.verifying_key());
+
+    // Create metadata CRDT document with default channels (general + voice)
+    let mut meta_doc = swarm::SwarmMetadataDocument::new(&public_key_hex)?;
+    swarm::metadata_storage::save_metadata_doc(&app, &swarm_id, &mut meta_doc)?;
+
+    // Create local metadata with both default channels and creator_key
     let metadata = SwarmMetadata {
         id: swarm_id,
         name,
         psk_hex: uri.clone(),
         created_at,
-        channels: vec![Channel {
-            id: "general".to_string(),
-            name: "General".to_string(),
-        }],
-        creator_key: None, // Set when metadata CRDT document is created
+        channels: vec![
+            Channel {
+                id: "general".to_string(),
+                name: "general".to_string(),
+            },
+            Channel {
+                id: "voice".to_string(),
+                name: "voice".to_string(),
+            },
+        ],
+        creator_key: Some(public_key_hex),
     };
 
     // Save to store
@@ -60,17 +78,24 @@ pub fn join_swarm(app: AppHandle, uri: String, name: String) -> Result<String, S
         .unwrap()
         .as_secs() as i64;
 
-    // Create metadata with General channel
+    // Create metadata with default channels (general + voice)
+    // creator_key is None — populated from CRDT metadata sync on first peer connection
     let metadata = SwarmMetadata {
         id: swarm_id.clone(),
         name,
         psk_hex: uri,
         created_at,
-        channels: vec![Channel {
-            id: "general".to_string(),
-            name: "General".to_string(),
-        }],
-        creator_key: None, // Populated from CRDT metadata sync
+        channels: vec![
+            Channel {
+                id: "general".to_string(),
+                name: "general".to_string(),
+            },
+            Channel {
+                id: "voice".to_string(),
+                name: "voice".to_string(),
+            },
+        ],
+        creator_key: None,
     };
 
     // Save to store
@@ -156,13 +181,16 @@ pub async fn leave_swarm(
         service.remove_swarm_documents(&swarm_id);
     }
 
-    // Step 4: Delete Automerge files from disk
+    // Step 4: Delete Automerge files from disk (chat documents)
     if let Ok(data_dir) = app.path().app_data_dir() {
         let swarm_chat_dir = data_dir.join("chat").join(&swarm_id);
         if swarm_chat_dir.exists() {
             let _ = std::fs::remove_dir_all(&swarm_chat_dir);
         }
     }
+
+    // Step 4b: Delete metadata CRDT document from disk
+    let _ = swarm::metadata_storage::delete_metadata_doc(&app, &swarm_id);
 
     // Step 5: Remove swarm metadata from store
     swarm::storage::delete_swarm(&app, &swarm_id).map_err(|e| e.to_string())?;

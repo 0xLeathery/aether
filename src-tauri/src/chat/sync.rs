@@ -30,6 +30,13 @@ impl PeerSyncStates {
             .retain(|(_, channel_key), _| !channel_key.starts_with(&prefix));
     }
 
+    /// Remove sync states for a specific channel across all peers
+    pub fn remove_channel(&mut self, swarm_id: &str, channel_id: &str) {
+        let channel_key = format!("{}/{}", swarm_id, channel_id);
+        self.states
+            .retain(|(_, key), _| *key != channel_key);
+    }
+
     /// Get or create sync state for a peer-channel pair
     pub fn get_or_create(&mut self, peer_id: PeerId, channel_key: String) -> &mut SyncState {
         self.states
