@@ -14,6 +14,7 @@ pub fn run() {
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .manage(std::sync::Mutex::new(network::NetworkService::new()))
+        .manage(tokio::sync::Mutex::new(voice::VoiceSession::new()))
         .invoke_handler(tauri::generate_handler![
             commands::identity::has_identity,
             commands::identity::create_identity,
@@ -26,6 +27,9 @@ pub fn run() {
             commands::swarm::join_swarm,
             commands::swarm::list_swarms,
             commands::swarm::switch_swarm,
+            commands::voice::join_voice,
+            commands::voice::leave_voice,
+            commands::voice::get_voice_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

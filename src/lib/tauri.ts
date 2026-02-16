@@ -97,3 +97,33 @@ export async function listSwarms(): Promise<SwarmMetadata[]> {
 export async function switchSwarm(swarmId: string): Promise<void> {
   return invoke<void>('switch_swarm', { swarmId });
 }
+
+// Voice types
+export interface VoiceStatus {
+  active: boolean;
+  participants: string[];
+  participant_count: number;
+  max_participants: number;
+}
+
+// Voice commands
+export async function joinVoice(): Promise<VoiceStatus> {
+  return invoke<VoiceStatus>('join_voice');
+}
+
+export async function leaveVoice(): Promise<void> {
+  return invoke<void>('leave_voice');
+}
+
+export async function getVoiceStatus(): Promise<VoiceStatus> {
+  return invoke<VoiceStatus>('get_voice_status');
+}
+
+// Voice event listeners
+export function onVoiceSessionJoined(callback: (participants: string[]) => void): Promise<UnlistenFn> {
+  return listen<string[]>('voice-session-joined', (event) => callback(event.payload));
+}
+
+export function onVoiceSessionLeft(callback: () => void): Promise<UnlistenFn> {
+  return listen('voice-session-left', () => callback());
+}
