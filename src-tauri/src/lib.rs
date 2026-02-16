@@ -3,6 +3,7 @@ mod error;
 mod identity;
 mod network;
 mod swarm;
+mod voice;
 
 use tauri::Manager;
 

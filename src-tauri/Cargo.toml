@@ -26,3 +26,6 @@ libp2p = { version = "0.56", features = ["kad", "mdns", "relay", "dcutr", "auton
 futures = "0.3"
 tauri-plugin-store = "2"
 sha2 = "0.10"
+cpal = "0.17"
+opus = "0.3"
+crossbeam-channel = "0.5"

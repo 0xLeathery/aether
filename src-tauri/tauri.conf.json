@@ -11,7 +11,11 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all"
+    "targets": "all",
+    "iOS": {},
+    "macOS": {
+      "minimumSystemVersion": "10.13"
+    }
   },
   "app": {
     "windows": [

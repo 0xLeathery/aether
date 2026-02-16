@@ -78,3 +78,28 @@ impl serde::Serialize for SwarmError {
         serializer.serialize_str(&self.to_string())
     }
 }
+
+#[derive(Debug, Error)]
+pub enum VoiceError {
+    #[error("Audio device not found: {0}")]
+    AudioDeviceNotFound(String),
+    #[error("Audio stream failed: {0}")]
+    AudioStreamFailed(String),
+    #[error("Codec error: {0}")]
+    CodecError(String),
+    #[error("Voice session is full (maximum 8 participants)")]
+    SessionFull,
+    #[error("Not currently in a voice session")]
+    NotInSession,
+    #[error("Already in a voice session")]
+    AlreadyInSession,
+}
+
+impl serde::Serialize for VoiceError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
