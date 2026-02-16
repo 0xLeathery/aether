@@ -44,19 +44,28 @@ async function recalculate(swarmId: string, channelId: string) {
 
   try {
     const messages = await getMessages(swarmId, channelId);
-    const current = states[key];
-    const totalSeen = current?.totalSeen ?? 0;
-    const hasUnread = messages.length > totalSeen;
+    const state = states[key];
+    const totalSeen = state?.totalSeen ?? 0;
+    const unseenCount = messages.length - totalSeen;
 
-    // For now, hasMention is always false (Plan 03 adds mention awareness)
-    states = {
-      ...states,
-      [key]: {
-        totalSeen,
-        hasUnread,
-        hasMention: false,
-      },
-    };
+    if (unseenCount > 0) {
+      // Check unseen messages for mentions of current user
+      const unseenMessages = messages.slice(totalSeen);
+      const hasMention = _currentUserKey
+        ? unseenMessages.some(m => (m.mentions ?? []).includes(_currentUserKey!))
+        : false;
+      states = {
+        ...states,
+        [key]: {
+          totalSeen,
+          hasUnread: true,
+          hasMention,
+        },
+      };
+    } else if (state?.hasUnread) {
+      // No unreads -- ensure clean state
+      states = { ...states, [key]: { ...state, hasUnread: false, hasMention: false } };
+    }
   } catch (err) {
     console.error('Unread recalculate error:', err);
   }
