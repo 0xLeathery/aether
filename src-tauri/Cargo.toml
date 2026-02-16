@@ -30,3 +30,6 @@ sha2 = "0.10"
 cpal = "0.17"
 opus = "0.3"
 crossbeam-channel = "0.5"
+automerge = "0.7"
+autosurgeon = "0.10"
+uuid = { version = "1", features = ["v4"] }
