@@ -4,4 +4,5 @@ pub mod contacts;
 pub mod identity;
 pub mod network;
 pub mod swarm;
+pub mod unread;
 pub mod voice;

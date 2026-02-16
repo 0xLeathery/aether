@@ -243,3 +243,17 @@ export async function getMessages(swarmId: string, channelId: string): Promise<C
 export function onChatMessagesUpdated(callback: (update: ChatMessagesUpdated) => void): Promise<UnlistenFn> {
   return listen<ChatMessagesUpdated>('chat-messages-updated', (event) => callback(event.payload));
 }
+
+// Unread types
+export interface ChannelReadState {
+  total_seen: number;
+}
+
+// Unread commands
+export async function markChannelRead(swarmId: string, channelId: string, totalSeen: number): Promise<void> {
+  return invoke<void>('mark_channel_read', { swarmId, channelId, totalSeen });
+}
+
+export async function getUnreadState(): Promise<Record<string, ChannelReadState>> {
+  return invoke<Record<string, ChannelReadState>>('get_unread_state');
+}

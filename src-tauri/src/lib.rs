@@ -46,6 +46,8 @@ pub fn run() {
             commands::contacts::set_petname,
             commands::contacts::remove_petname,
             commands::contacts::get_contacts,
+            commands::unread::mark_channel_read,
+            commands::unread::get_unread_state,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
