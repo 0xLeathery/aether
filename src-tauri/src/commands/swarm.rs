@@ -32,6 +32,7 @@ pub fn create_swarm(app: AppHandle, name: String) -> Result<String, SwarmError> 
             id: "general".to_string(),
             name: "General".to_string(),
         }],
+        creator_key: None, // Set when metadata CRDT document is created
     };
 
     // Save to store
@@ -69,6 +70,7 @@ pub fn join_swarm(app: AppHandle, uri: String, name: String) -> Result<String, S
             id: "general".to_string(),
             name: "General".to_string(),
         }],
+        creator_key: None, // Populated from CRDT metadata sync
     };
 
     // Save to store

@@ -68,9 +68,38 @@ pub enum SwarmError {
     NotFound(String),
     #[error("Storage error: {0}")]
     StorageError(String),
+    #[error(transparent)]
+    Channel(#[from] ChannelError),
 }
 
 impl serde::Serialize for SwarmError {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum ChannelError {
+    #[error("Channel not found: {0}")]
+    NotFound(String),
+    #[error("Only the swarm creator can manage channels")]
+    NotCreator,
+    #[error("Cannot modify default channel: {0}")]
+    DefaultChannel(String),
+    #[error("Invalid channel name: {0}")]
+    InvalidName(String),
+    #[error("Document error: {0}")]
+    DocumentError(String),
+    #[error("Storage error: {0}")]
+    StorageError(String),
+    #[error("Sync error: {0}")]
+    SyncError(String),
+}
+
+impl serde::Serialize for ChannelError {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: serde::Serializer,

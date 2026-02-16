@@ -19,6 +19,12 @@ pub struct SwarmMetadata {
     pub psk_hex: String, // Full aether:// URI
     pub created_at: i64, // Unix timestamp
     pub channels: Vec<Channel>,
+    /// The swarm creator's Ed25519 public key (hex).
+    /// Option for backward compatibility with existing swarms.
+    /// The CRDT metadata document is the source of truth;
+    /// this is a local cache for permission checks.
+    #[serde(default)]
+    pub creator_key: Option<String>,
 }
 
 /// Save swarm metadata to Tauri Store
