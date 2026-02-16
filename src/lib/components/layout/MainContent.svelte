@@ -12,10 +12,8 @@
     voiceStore.initialize();
   });
 
-  // Derive active channel from the active swarm's first channel
-  let activeChannelId = $derived(
-    swarmStore.activeSwarm?.channels?.[0]?.id ?? null
-  );
+  // Use the store's activeChannelId (set by ChannelList on click)
+  let activeChannelId = $derived(swarmStore.activeChannelId);
 </script>
 
 {#if swarmStore.activeSwarm && activeChannelId}
