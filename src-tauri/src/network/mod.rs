@@ -34,6 +34,7 @@ pub struct NetworkService {
     peer_state: Arc<RwLock<PeerStateTracker>>,
     peer_id: Option<PeerId>,
     listening_addrs: Arc<RwLock<Vec<Multiaddr>>>,
+    stream_control: Option<libp2p_stream::Control>,
 }
 
 impl NetworkService {
@@ -44,6 +45,7 @@ impl NetworkService {
             peer_state: Arc::new(RwLock::new(PeerStateTracker::new())),
             peer_id: None,
             listening_addrs: Arc::new(RwLock::new(Vec::new())),
+            stream_control: None,
         }
     }
 
@@ -64,6 +66,10 @@ impl NetworkService {
 
         // Build swarm (no PSK - open network)
         let mut swarm = swarm::build_swarm(keypair, None)?;
+
+        // Extract stream control BEFORE moving swarm into async task
+        let stream_control = swarm.behaviour().stream.new_control();
+        self.stream_control = Some(stream_control);
 
         // Create command channel
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();
@@ -198,6 +204,10 @@ impl NetworkService {
 
         // Build swarm with PSK
         let mut swarm = swarm::build_swarm(keypair, Some(psk))?;
+
+        // Extract stream control BEFORE moving swarm into async task
+        let stream_control = swarm.behaviour().stream.new_control();
+        self.stream_control = Some(stream_control);
 
         // Create command channel
         let (cmd_tx, mut cmd_rx) = mpsc::unbounded_channel();
@@ -335,5 +345,13 @@ impl NetworkService {
         } else {
             Vec::new()
         }
+    }
+
+    /// Get stream control handle for voice session
+    ///
+    /// Returns None if network service is not running
+    /// Control is cheaply cloneable (Arc internally)
+    pub fn stream_control(&self) -> Option<libp2p_stream::Control> {
+        self.stream_control.clone()
     }
 }
