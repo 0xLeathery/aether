@@ -127,3 +127,31 @@ export function onVoiceSessionJoined(callback: (participants: string[]) => void)
 export function onVoiceSessionLeft(callback: () => void): Promise<UnlistenFn> {
   return listen('voice-session-left', () => callback());
 }
+
+// Chat types
+export interface ChatMessage {
+  id: string;
+  sender_key: string;
+  sender_name: string;
+  content: string;
+  timestamp: number;
+}
+
+export interface ChatMessagesUpdated {
+  swarm_id: string;
+  channel_id: string;
+}
+
+// Chat commands
+export async function sendMessage(swarmId: string, channelId: string, content: string): Promise<ChatMessage> {
+  return invoke<ChatMessage>('send_message', { swarmId, channelId, content });
+}
+
+export async function getMessages(swarmId: string, channelId: string): Promise<ChatMessage[]> {
+  return invoke<ChatMessage[]>('get_messages', { swarmId, channelId });
+}
+
+// Chat event listeners
+export function onChatMessagesUpdated(callback: (update: ChatMessagesUpdated) => void): Promise<UnlistenFn> {
+  return listen<ChatMessagesUpdated>('chat-messages-updated', (event) => callback(event.payload));
+}
