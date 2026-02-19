@@ -1,5 +1,5 @@
 use crate::error::VoiceError;
-use opus::{Application, Channels, Decoder, Encoder};
+use opus_codec::{Application, Channels, Decoder, Encoder, SampleRate};
 
 /// Audio configuration constants for VoIP
 pub const SAMPLE_RATE: u32 = 48000; // 48kHz for Opus VoIP
@@ -23,10 +23,10 @@ impl VoiceEncoder {
     /// - VBR: Enabled (variable bitrate for efficiency)
     /// - DTX: Enabled (discontinuous transmission - silence suppression)
     pub fn new() -> Result<Self, VoiceError> {
-        let encoder = Encoder::new(SAMPLE_RATE, Channels::Mono, Application::Voip)
+        let encoder = Encoder::new(SampleRate::Hz48000, Channels::Mono, Application::Voip)
             .map_err(|e| VoiceError::CodecError(format!("Failed to create encoder: {}", e)))?;
 
-        // Note: opus crate 0.3 doesn't expose set_bitrate or CTL options in safe API
+        // Note: opus-codec exposes full CTL access but we keep defaults for now
         // The encoder is already configured for VoIP mode which optimizes for:
         // - Low latency (20ms frames)
         // - Speech content
@@ -70,7 +70,7 @@ pub struct VoiceDecoder {
 impl VoiceDecoder {
     /// Create a new Opus decoder for 48kHz mono audio
     pub fn new() -> Result<Self, VoiceError> {
-        let decoder = Decoder::new(SAMPLE_RATE, Channels::Mono)
+        let decoder = Decoder::new(SampleRate::Hz48000, Channels::Mono)
             .map_err(|e| VoiceError::CodecError(format!("Failed to create decoder: {}", e)))?;
 
         Ok(Self { decoder })
