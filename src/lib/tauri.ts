@@ -258,3 +258,40 @@ export async function markChannelRead(swarmId: string, channelId: string, totalS
 export async function getUnreadState(): Promise<Record<string, ChannelReadState>> {
   return invoke<Record<string, ChannelReadState>>('get_unread_state');
 }
+
+// Moderation types
+export type ModerationTier = 'mute' | 'hide' | 'block';
+
+export interface ModerationEntry {
+  tier: ModerationTier;
+  swarm_overrides: Record<string, ModerationTier | null>;
+}
+
+// Moderation commands
+export async function getModerationState(): Promise<Record<string, ModerationEntry>> {
+  return invoke<Record<string, ModerationEntry>>('get_moderation_state');
+}
+
+export async function setModeration(
+  publicKey: string,
+  tier: ModerationTier,
+  swarmOverrides?: Record<string, ModerationTier | null>
+): Promise<void> {
+  return invoke<void>('set_moderation', { 
+    publicKey, 
+    tier, 
+    swarmOverrides: swarmOverrides ?? {} 
+  });
+}
+
+export async function removeModeration(publicKey: string): Promise<void> {
+  return invoke<void>('remove_moderation', { publicKey });
+}
+
+export async function mutePeerVoice(peerKeyHex: string): Promise<void> {
+  return invoke<void>('mute_peer_voice', { peerKeyHex });
+}
+
+export async function unmutePeerVoice(peerKeyHex: string): Promise<void> {
+  return invoke<void>('unmute_peer_voice', { peerKeyHex });
+}
