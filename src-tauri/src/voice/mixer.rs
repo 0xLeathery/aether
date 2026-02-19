@@ -1,7 +1,7 @@
 use crate::error::VoiceError;
 use crate::voice::jitter_buffer::{AudioFrame, JitterBuffer};
 use libp2p::PeerId;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 /// Multi-peer audio mixer with participant limit
 ///
@@ -10,6 +10,8 @@ use std::collections::HashMap;
 pub struct AudioMixer {
     peer_buffers: HashMap<PeerId, JitterBuffer>,
     max_participants: usize,
+    /// Peers whose audio is muted (silenced but buffer still drained)
+    muted_peers: HashSet<PeerId>,
 }
 
 impl AudioMixer {
@@ -18,6 +20,7 @@ impl AudioMixer {
         Self {
             peer_buffers: HashMap::new(),
             max_participants: 8,
+            muted_peers: HashSet::new(),
         }
     }
 
@@ -36,6 +39,22 @@ impl AudioMixer {
     /// Remove a peer from the voice session
     pub fn remove_peer(&mut self, peer_id: &PeerId) {
         self.peer_buffers.remove(peer_id);
+        self.muted_peers.remove(peer_id);
+    }
+
+    /// Mute a peer - their audio will be silenced but buffer still drained
+    pub fn mute_peer(&mut self, peer_id: PeerId) {
+        self.muted_peers.insert(peer_id);
+    }
+
+    /// Unmute a peer - their audio will be included in the mix again
+    pub fn unmute_peer(&mut self, peer_id: &PeerId) {
+        self.muted_peers.remove(peer_id);
+    }
+
+    /// Check if a peer is muted
+    pub fn is_muted(&self, peer_id: &PeerId) -> bool {
+        self.muted_peers.contains(peer_id)
     }
 
     /// Feed an audio frame from a specific peer
@@ -54,6 +73,8 @@ impl AudioMixer {
     /// Retrieves one frame from each peer's jitter buffer (if ready),
     /// sums samples, normalizes by active peer count, and applies hard limiting.
     ///
+    /// Muted peers have their buffer drained but audio is discarded (prevents buffer buildup).
+    ///
     /// Returns a vector of mixed samples (typically FRAME_SIZE length).
     /// Returns silence (zeros) if no peers have ready frames.
     pub fn mix_next_frame(&mut self, frame_size: usize) -> Vec<f32> {
@@ -61,7 +82,13 @@ impl AudioMixer {
         let mut active_count = 0;
 
         // Collect frames from all peers
-        for buffer in self.peer_buffers.values_mut() {
+        for (peer_id, buffer) in self.peer_buffers.iter_mut() {
+            // Drain buffer for muted peers but discard the audio
+            if self.muted_peers.contains(peer_id) {
+                let _ = buffer.get_frame();
+                continue;
+            }
+
             if let Some(data) = buffer.get_frame() {
                 active_count += 1;
 

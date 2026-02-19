@@ -2,6 +2,7 @@ pub mod channel;
 pub mod chat;
 pub mod contacts;
 pub mod identity;
+pub mod moderation;
 pub mod network;
 pub mod swarm;
 pub mod unread;

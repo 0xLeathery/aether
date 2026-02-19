@@ -3,6 +3,7 @@ mod commands;
 mod contacts;
 mod error;
 mod identity;
+mod moderation;
 mod network;
 mod swarm;
 mod voice;
@@ -48,6 +49,11 @@ pub fn run() {
             commands::contacts::get_contacts,
             commands::unread::mark_channel_read,
             commands::unread::get_unread_state,
+            commands::moderation::get_moderation_state,
+            commands::moderation::set_moderation,
+            commands::moderation::remove_moderation,
+            commands::moderation::mute_peer_voice,
+            commands::moderation::unmute_peer_voice,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
