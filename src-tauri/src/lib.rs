@@ -16,6 +16,7 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_store::Builder::new().build())
+        .plugin(tauri_plugin_notification::init())
         .manage(std::sync::Mutex::new(network::NetworkService::new()))
         .manage(tokio::sync::Mutex::new(voice::VoiceSession::new()))
         .manage(Arc::new(tokio::sync::Mutex::new(chat::ChatService::new())))

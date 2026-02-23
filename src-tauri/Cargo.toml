@@ -26,6 +26,7 @@ libp2p = { version = "0.56", features = ["kad", "mdns", "relay", "dcutr", "auton
 libp2p-stream = "0.4.0-alpha"
 futures = "0.3"
 tauri-plugin-store = "2"
+tauri-plugin-notification = "2"
 sha2 = "0.10"
 cpal = "0.17"
 opus-codec = "0.1"
