@@ -17,6 +17,18 @@ use super::{
     protocol::{VoicePacket, VOICE_PROTOCOL, send_frame, recv_frame},
 };
 
+/// Convert hex-encoded Ed25519 public key to libp2p PeerId
+fn hex_to_peer_id(hex_key: &str) -> Result<PeerId, String> {
+    let bytes = hex::decode(hex_key)
+        .map_err(|e| format!("Invalid hex key: {}", e))?;
+    let bytes_array: [u8; 32] = bytes.try_into()
+        .map_err(|_| "Public key must be 32 bytes".to_string())?;
+    let ed25519_pub = libp2p::identity::ed25519::PublicKey::try_from_bytes(&bytes_array)
+        .map_err(|e| format!("Invalid ed25519 key: {}", e))?;
+    let libp2p_pub = libp2p::identity::PublicKey::from(ed25519_pub);
+    Ok(PeerId::from_public_key(&libp2p_pub))
+}
+
 /// Voice session manager
 ///
 /// Coordinates the complete voice pipeline:
@@ -63,19 +75,23 @@ impl VoiceSession {
 
     /// Mute a peer's voice - their audio will be silenced in the mixer
     ///
-    /// Stores the hex public key for future peers and attempts to mute
-    /// if the peer is currently a participant.
+    /// Stores the hex public key for future peers and mutes the peer
+    /// in the mixer if they are currently a participant.
     pub async fn mute_peer(&self, peer_key_hex: String) -> Result<(), String> {
-        // Store the key for when peers join later
+        // Store the key so future joins are also muted
         {
             let mut keys = self.muted_peer_keys.write().await;
             keys.insert(peer_key_hex.clone());
         }
 
-        // Note: Full PeerId<->PublicKey mapping would require network module lookup
-        // For now, we rely on the hex key stored and apply when we can match
-        // The mixer stores muted_peer_keys by hex and applies during participant management
-        
+        // Resolve hex key to PeerId and mute in mixer if currently active
+        if let Ok(peer_id) = hex_to_peer_id(&peer_key_hex) {
+            let participants = self.participants.read().await;
+            if participants.contains(&peer_id) {
+                self.mixer.write().await.mute_peer(peer_id);
+            }
+        }
+
         Ok(())
     }
 
@@ -87,10 +103,14 @@ impl VoiceSession {
             keys.remove(&peer_key_hex);
         }
 
-        // Note: Unmuting a specific peer by hex key requires peer lookup
-        // which would need network module integration. For now, we rely on
-        // the stored key state and the mixer checking on peer operations.
-        
+        // Resolve hex key to PeerId and unmute in mixer if currently active
+        if let Ok(peer_id) = hex_to_peer_id(&peer_key_hex) {
+            let participants = self.participants.read().await;
+            if participants.contains(&peer_id) {
+                self.mixer.write().await.unmute_peer(&peer_id);
+            }
+        }
+
         Ok(())
     }
 
@@ -138,6 +158,23 @@ impl VoiceSession {
             let mut mixer = self.mixer.write().await;
             for peer_id in peer_ids.iter() {
                 mixer.add_peer(*peer_id)?;
+            }
+        }
+
+        // Apply muted_peer_keys to mixer for any peers that should be muted
+        {
+            let muted_keys = self.muted_peer_keys.read().await;
+            if !muted_keys.is_empty() {
+                let mut mixer = self.mixer.write().await;
+                for peer_id in peer_ids.iter() {
+                    for hex_key in muted_keys.iter() {
+                        if let Ok(muted_peer_id) = hex_to_peer_id(hex_key) {
+                            if *peer_id == muted_peer_id {
+                                mixer.mute_peer(*peer_id);
+                            }
+                        }
+                    }
+                }
             }
         }
 
