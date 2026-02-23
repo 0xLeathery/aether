@@ -7,6 +7,7 @@ import {
   type ModerationEntry,
   type ModerationTier,
 } from '../tauri';
+import { unreadStore } from './unread.svelte';
 
 let entries = $state<Map<string, ModerationEntry>>(new Map());
 let initialized = $state(false);
@@ -75,6 +76,8 @@ async function setTier(publicKey: string, tier: ModerationTier) {
     await setModeration(publicKey, tier, entry.swarm_overrides);
     // Sync voice mute state
     await syncVoiceMute(publicKey);
+    // Refresh unread badges after moderation change
+    try { unreadStore.recalculateAll(); } catch (_) { /* unread store may not be initialized */ }
   } catch (err) {
     // Rollback on error
     if (!existing) {
@@ -99,6 +102,8 @@ async function removeTier(publicKey: string) {
     await removeModeration(publicKey);
     // Sync voice unmute
     await syncVoiceMute(publicKey);
+    // Refresh unread badges after moderation removal
+    try { unreadStore.recalculateAll(); } catch (_) { /* unread store may not be initialized */ }
   } catch (err) {
     // Rollback on error
     if (existing) {

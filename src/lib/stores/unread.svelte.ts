@@ -1,4 +1,5 @@
 import { getMessages, getUnreadState, markChannelRead, onChatMessagesUpdated, type UnlistenFn } from '../tauri';
+import { moderationStore } from './moderation.svelte';
 
 interface ChannelUnreadState {
   totalSeen: number;
@@ -49,16 +50,25 @@ async function recalculate(swarmId: string, channelId: string) {
     const unseenCount = messages.length - totalSeen;
 
     if (unseenCount > 0) {
-      // Check unseen messages for mentions of current user
+      // Check unseen messages, filtering out all moderated peers
       const unseenMessages = messages.slice(totalSeen);
+
+      // All moderation tiers suppress unreads (per user decision)
+      const visibleUnseen = unseenMessages.filter(m =>
+        !moderationStore.isMuted(m.sender_key, swarmId)
+      );
+      const hasUnread = visibleUnseen.length > 0;
+
+      // All moderation tiers suppress mentions (visibleUnseen already filtered)
       const hasMention = _currentUserKey
-        ? unseenMessages.some(m => (m.mentions ?? []).includes(_currentUserKey!))
+        ? visibleUnseen.some(m => (m.mentions ?? []).includes(_currentUserKey!))
         : false;
+
       states = {
         ...states,
         [key]: {
           totalSeen,
-          hasUnread: true,
+          hasUnread,
           hasMention,
         },
       };
@@ -87,6 +97,15 @@ async function markRead(swarmId: string, channelId: string, messageCount: number
     await markChannelRead(swarmId, channelId, messageCount);
   } catch (err) {
     console.error('Failed to persist unread state:', err);
+  }
+}
+
+function recalculateAll() {
+  for (const key of Object.keys(states)) {
+    const [swarmId, channelId] = key.split('/');
+    if (swarmId && channelId) {
+      recalculate(swarmId, channelId);
+    }
   }
 }
 
@@ -125,6 +144,7 @@ export const unreadStore = {
   get initialized() { return initialized; },
   initialize,
   recalculate,
+  recalculateAll,
   markRead,
   hasUnread,
   hasMention,
