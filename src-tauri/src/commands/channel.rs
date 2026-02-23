@@ -306,6 +306,52 @@ pub async fn delete_channel(
     Ok(())
 }
 
+/// Migrate channel metadata for all swarms on startup
+///
+/// Iterates all swarms, loads their metadata documents, and fills
+/// missing created_by fields with the creator_key. For pre-Phase-7
+/// swarms that lack a metadata CRDT doc, creates one if creator_key
+/// is available. Silently skips errors for individual swarms.
+#[tauri::command]
+pub async fn migrate_channel_metadata(app: AppHandle) -> Result<(), String> {
+    let swarms = swarm::storage::list_swarms(&app).map_err(|e| format!("Storage error: {}", e))?;
+
+    for swarm_meta in &swarms {
+        match swarm::metadata_storage::load_metadata_doc(&app, &swarm_meta.id) {
+            Ok(Some(mut doc)) => {
+                // Fill missing created_by fields
+                if let Ok(true) = doc.fill_missing_created_by() {
+                    let _ = swarm::metadata_storage::save_metadata_doc(
+                        &app,
+                        &swarm_meta.id,
+                        &mut doc,
+                    );
+                }
+            }
+            Ok(None) => {
+                // No metadata doc exists — create one if we have a creator_key
+                if let Some(ref creator_key) = swarm_meta.creator_key {
+                    if let Ok(mut doc) = SwarmMetadataDocument::new(creator_key) {
+                        let _ = swarm::metadata_storage::save_metadata_doc(
+                            &app,
+                            &swarm_meta.id,
+                            &mut doc,
+                        );
+                    }
+                }
+            }
+            Err(e) => {
+                eprintln!(
+                    "migrate_channel_metadata: skipping swarm {}: {}",
+                    swarm_meta.id, e
+                );
+            }
+        }
+    }
+
+    Ok(())
+}
+
 /// List all channels in a swarm
 ///
 /// Reads from the CRDT metadata document if available,

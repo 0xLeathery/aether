@@ -134,5 +134,10 @@ pub async fn sync_metadata_document(
         }
     }
 
+    // Post-sync validation: remove unauthorized channels from non-creator peers
+    if received_changes {
+        let _ = doc.validate_channels_creator();
+    }
+
     Ok(received_changes)
 }

@@ -163,6 +163,81 @@ impl SwarmMetadataDocument {
         Ok(data.creator_key)
     }
 
+    /// Validate that all non-default channels were created by the swarm creator
+    ///
+    /// Hydrates the document, checks each channel's created_by field against
+    /// the creator_key. Removes any channels where created_by does not match
+    /// (except default channels "general" and "voice" which are always valid).
+    /// Returns Ok(true) if unauthorized channels were removed, Ok(false) if
+    /// all channels are valid. Returns Ok(false) if creator_key is empty.
+    pub fn validate_channels_creator(&mut self) -> Result<bool, ChannelError> {
+        let mut data: SwarmMetaData = hydrate(&self.doc).map_err(|e| {
+            ChannelError::DocumentError(format!("Failed to hydrate metadata: {}", e))
+        })?;
+
+        if data.creator_key.is_empty() {
+            return Ok(false);
+        }
+
+        let mut needs_removal = false;
+        let mut valid_channels = HashMap::new();
+
+        for (id, meta) in &data.channels {
+            // Default channels are always valid
+            if id == "general" || id == "voice" {
+                valid_channels.insert(id.clone(), meta.clone());
+                continue;
+            }
+            // Only keep channels created by the swarm creator
+            if meta.created_by == data.creator_key {
+                valid_channels.insert(id.clone(), meta.clone());
+            } else {
+                needs_removal = true;
+            }
+        }
+
+        if needs_removal {
+            data.channels = valid_channels;
+            reconcile(&mut self.doc, &data).map_err(|e| {
+                ChannelError::DocumentError(format!("Failed to reconcile metadata: {}", e))
+            })?;
+        }
+
+        Ok(needs_removal)
+    }
+
+    /// Fill missing created_by fields with the creator_key
+    ///
+    /// Iterates all channels and sets created_by to creator_key for any
+    /// channel where created_by is empty. Returns Ok(true) if any fields
+    /// were filled, Ok(false) if none needed filling or creator_key is empty.
+    pub fn fill_missing_created_by(&mut self) -> Result<bool, ChannelError> {
+        let mut data: SwarmMetaData = hydrate(&self.doc).map_err(|e| {
+            ChannelError::DocumentError(format!("Failed to hydrate metadata: {}", e))
+        })?;
+
+        if data.creator_key.is_empty() {
+            return Ok(false);
+        }
+
+        let mut filled = false;
+
+        for (_id, meta) in data.channels.iter_mut() {
+            if meta.created_by.is_empty() {
+                meta.created_by = data.creator_key.clone();
+                filled = true;
+            }
+        }
+
+        if filled {
+            reconcile(&mut self.doc, &data).map_err(|e| {
+                ChannelError::DocumentError(format!("Failed to reconcile metadata: {}", e))
+            })?;
+        }
+
+        Ok(filled)
+    }
+
     /// Get mutable access to the inner AutoCommit (for sync protocol)
     pub fn doc_mut(&mut self) -> &mut AutoCommit {
         &mut self.doc

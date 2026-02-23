@@ -147,6 +147,10 @@ export async function listChannels(swarmId: string): Promise<ChannelInfo[]> {
   return invoke<ChannelInfo[]>('list_channels', { swarmId });
 }
 
+export async function migrateChannelMetadata(): Promise<void> {
+  return invoke<void>('migrate_channel_metadata');
+}
+
 // Channel event listeners
 export function onChannelsUpdated(callback: (update: ChannelsUpdated) => void): Promise<UnlistenFn> {
   return listen<ChannelsUpdated>('channels-updated', (event) => callback(event.payload));

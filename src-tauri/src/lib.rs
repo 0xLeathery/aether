@@ -42,6 +42,7 @@ pub fn run() {
             commands::channel::rename_channel,
             commands::channel::delete_channel,
             commands::channel::list_channels,
+            commands::channel::migrate_channel_metadata,
             commands::chat::send_message,
             commands::chat::get_messages,
             commands::contacts::set_petname,
