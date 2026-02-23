@@ -3,6 +3,7 @@
   import { identityStore } from './lib/stores/identity.svelte';
   import { networkStore } from './lib/stores/network.svelte';
   import { swarmStore } from './lib/stores/swarm.svelte';
+  import { migrateChannelMetadata } from './lib/tauri';
   import SetupFlow from './lib/components/setup/SetupFlow.svelte';
   import AppShell from './lib/components/layout/AppShell.svelte';
 
@@ -12,12 +13,16 @@
     await identityStore.initialize();
 
     if (identityStore.identity) {
+      // Set local identity for isCreator evaluation before any swarm data loads
+      swarmStore.setLocalIdentity(identityStore.identity.public_key_hex);
+
       // Identity exists, initialize network and swarms
       await networkStore.initialize();
       await networkStore.start();
 
       // Load swarms, then activate default swarm (defers network restart until after Tokio runtime ready)
       await swarmStore.initialize();
+      await migrateChannelMetadata();
       await swarmStore.activateDefaultSwarm();
 
       appState = 'app';
@@ -27,11 +32,15 @@
   });
 
   async function handleSetupComplete() {
+    // Set local identity for isCreator evaluation (identity was just created)
+    swarmStore.setLocalIdentity(identityStore.identity!.public_key_hex);
+
     // After identity creation, start the network and initialize swarms
     await networkStore.start();
 
     // Load swarms, then activate default swarm (defers network restart until after Tokio runtime ready)
     await swarmStore.initialize();
+    await migrateChannelMetadata();
     await swarmStore.activateDefaultSwarm();
 
     appState = 'app';
