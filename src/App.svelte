@@ -3,6 +3,7 @@
   import { identityStore } from './lib/stores/identity.svelte';
   import { networkStore } from './lib/stores/network.svelte';
   import { swarmStore } from './lib/stores/swarm.svelte';
+  import { notificationStore } from './lib/stores/notification.svelte';
   import { migrateChannelMetadata } from './lib/tauri';
   import SetupFlow from './lib/components/setup/SetupFlow.svelte';
   import AppShell from './lib/components/layout/AppShell.svelte';
@@ -26,6 +27,7 @@
       await swarmStore.activateDefaultSwarm();
 
       appState = 'app';
+      await notificationStore.initialize(identityStore.identity.public_key_hex);
     } else {
       appState = 'setup';
     }
@@ -44,6 +46,7 @@
     await swarmStore.activateDefaultSwarm();
 
     appState = 'app';
+    await notificationStore.initialize(identityStore.identity!.public_key_hex);
   }
 </script>
 
