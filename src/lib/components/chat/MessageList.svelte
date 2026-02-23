@@ -1,15 +1,22 @@
 <script lang="ts">
   import type { ChatMessage } from '../../tauri';
   import { contactsStore } from '../../stores/contacts.svelte';
+  import { moderationStore } from '../../stores/moderation.svelte';
   import ContactEditor from '../contacts/ContactEditor.svelte';
+  import PeerContextMenu from '../moderation/PeerContextMenu.svelte';
+  import BlockConfirmDialog from '../moderation/BlockConfirmDialog.svelte';
 
-  let { messages, currentUserKey }: {
+  let { messages, currentUserKey, swarmId }: {
     messages: ChatMessage[];
     currentUserKey: string;
+    swarmId: string;
   } = $props();
 
   let scrollContainer: HTMLDivElement | undefined = $state();
   let editingContact = $state<{ publicKey: string; x: number; y: number } | null>(null);
+  let contextMenu = $state<{ publicKey: string; x: number; y: number } | null>(null);
+  let showBlockConfirm = $state<string | null>(null);
+  let revealedIds = $state<Set<string>>(new Set());
 
   // Auto-scroll to bottom when messages change
   $effect(() => {
@@ -105,6 +112,31 @@
       && date.getMonth() === today.getMonth()
       && date.getDate() === today.getDate();
   }
+
+  function handleMessageContextMenu(senderKey: string, event: MouseEvent) {
+    event.preventDefault();
+    if (senderKey !== currentUserKey) {
+      contextMenu = { publicKey: senderKey, x: event.clientX, y: event.clientY };
+    }
+  }
+
+  function handleSetTier(publicKey: string, tier: 'mute' | 'hide' | 'block') {
+    moderationStore.setTier(publicKey, tier);
+  }
+
+  function handleRemoveTier(publicKey: string) {
+    moderationStore.removeTier(publicKey);
+  }
+
+  function handleBlockConfirm(publicKey: string) {
+    moderationStore.setTier(publicKey, 'block');
+    showBlockConfirm = null;
+  }
+
+  function revealMessage(id: string) {
+    // Create new Set for reactivity
+    revealedIds = new Set([...revealedIds, id]);
+  }
 </script>
 
 <div class="message-list" bind:this={scrollContainer}>
@@ -121,29 +153,43 @@
           </span>
         </div>
       {/if}
-      <div class="message-row" class:mentioned={isMentioningMe(msg)}>
-        <span class="msg-time">{formatTime(msg.timestamp)}</span>
-        <span class="msg-sender">
-          {getSenderDisplay(msg)}
-          {#if isOwnMessage(msg)}
-            <span class="you-badge">YOU</span>
-          {/if}
-        </span>
-        <span class="msg-content">
-          {#each renderMentionContent(msg.content, msg.mentions ?? []) as part}
-            {#if part.type === 'mention'}
-              <button
-                class="mention-link"
-                onclick={(e) => handleMentionClick(part.publicKey!, e)}
-              >
-                {part.value}
-              </button>
-            {:else}
-              {part.value}
+      {#if moderationStore.isBlocked(msg.sender_key, swarmId)}
+        <!-- Blocked: fully hidden, zero DOM footprint -->
+      {:else if moderationStore.isHidden(msg.sender_key, swarmId) && !revealedIds.has(msg.id)}
+        <div class="message-row message-hidden-placeholder">
+          <span class="msg-time">{formatTime(msg.timestamp)}</span>
+          <button class="hidden-msg-btn" onclick={() => revealMessage(msg.id)}>
+            Message from hidden user
+          </button>
+        </div>
+      {:else}
+        <div class="message-row" class:mentioned={isMentioningMe(msg)}>
+          <span class="msg-time">{formatTime(msg.timestamp)}</span>
+          <span 
+            class="msg-sender"
+            oncontextmenu={(e) => handleMessageContextMenu(msg.sender_key, e)}
+          >
+            {getSenderDisplay(msg)}
+            {#if isOwnMessage(msg)}
+              <span class="you-badge">YOU</span>
             {/if}
-          {/each}
-        </span>
-      </div>
+          </span>
+          <span class="msg-content">
+            {#each renderMentionContent(msg.content, msg.mentions ?? []) as part}
+              {#if part.type === 'mention'}
+                <button
+                  class="mention-link"
+                  onclick={(e) => handleMentionClick(part.publicKey!, e)}
+                >
+                  {part.value}
+                </button>
+              {:else}
+                {part.value}
+              {/if}
+            {/each}
+          </span>
+        </div>
+      {/if}
     {/each}
   {/if}
 </div>
@@ -158,6 +204,28 @@
       onClose={() => editingContact = null}
     />
   </div>
+{/if}
+
+{#if contextMenu}
+  <PeerContextMenu
+    x={contextMenu.x}
+    y={contextMenu.y}
+    publicKey={contextMenu.publicKey}
+    currentTier={moderationStore.getEffectiveTier(contextMenu.publicKey, swarmId)}
+    onMute={() => { handleSetTier(contextMenu!.publicKey, 'mute'); contextMenu = null; }}
+    onHide={() => { handleSetTier(contextMenu!.publicKey, 'hide'); contextMenu = null; }}
+    onBlock={() => { showBlockConfirm = contextMenu!.publicKey; contextMenu = null; }}
+    onRemove={() => { handleRemoveTier(contextMenu!.publicKey); contextMenu = null; }}
+    onClose={() => contextMenu = null}
+  />
+{/if}
+
+{#if showBlockConfirm}
+  <BlockConfirmDialog
+    peerName={contactsStore.resolveName(showBlockConfirm, '')}
+    onConfirm={() => handleBlockConfirm(showBlockConfirm!)}
+    onCancel={() => showBlockConfirm = null}
+  />
 {/if}
 
 <style>
@@ -285,5 +353,26 @@
   .mention-editor-popup {
     position: fixed;
     z-index: 200;
+  }
+
+  .message-hidden-placeholder {
+    opacity: 0.5;
+    font-style: italic;
+  }
+
+  .hidden-msg-btn {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    background: none;
+    border: 1px dashed var(--border-color);
+    padding: 0.2rem 0.5rem;
+    cursor: pointer;
+    font-style: italic;
+  }
+
+  .hidden-msg-btn:hover {
+    color: var(--text-secondary);
+    border-color: var(--text-muted);
   }
 </style>

@@ -1,11 +1,16 @@
 <script lang="ts">
   import type { PeerInfo } from '../../tauri';
   import { contactsStore } from '../../stores/contacts.svelte';
+  import { moderationStore } from '../../stores/moderation.svelte';
   import ContactEditor from '../contacts/ContactEditor.svelte';
+  import PeerContextMenu from '../moderation/PeerContextMenu.svelte';
+  import BlockConfirmDialog from '../moderation/BlockConfirmDialog.svelte';
 
-  let { peers }: { peers: PeerInfo[] } = $props();
+  let { peers, currentUserKey }: { peers: PeerInfo[]; currentUserKey: string } = $props();
 
   let editingPeerId = $state<string | null>(null);
+  let contextMenu = $state<{ publicKey: string; x: number; y: number } | null>(null);
+  let showBlockConfirm = $state<string | null>(null);
 
   function getStatusColor(status: string): string {
     switch (status) {
@@ -32,6 +37,26 @@
   function formatStatus(status: string): string {
     return status.charAt(0).toUpperCase() + status.slice(1);
   }
+
+  function handleContextMenu(peerId: string, event: MouseEvent) {
+    event.preventDefault();
+    if (peerId !== currentUserKey) {
+      contextMenu = { publicKey: peerId, x: event.clientX, y: event.clientY };
+    }
+  }
+
+  function handleSetTier(publicKey: string, tier: 'mute' | 'hide' | 'block') {
+    moderationStore.setTier(publicKey, tier);
+  }
+
+  function handleRemoveTier(publicKey: string) {
+    moderationStore.removeTier(publicKey);
+  }
+
+  function handleBlockConfirm(publicKey: string) {
+    moderationStore.setTier(publicKey, 'block');
+    showBlockConfirm = null;
+  }
 </script>
 
 {#if peers.length === 0}
@@ -43,7 +68,17 @@
     {#each peers as peer}
       <div class="peer-row">
         <div class="status-dot" style="background-color: {getStatusColor(peer.status)}"></div>
-        <span class="peer-id">{getPeerDisplayName(peer.peer_id)}</span>
+        <span 
+          class="peer-id" 
+          oncontextmenu={(e) => handleContextMenu(peer.peer_id, e)}
+        >{getPeerDisplayName(peer.peer_id)}</span>
+        {#if moderationStore.isBlocked(peer.peer_id)}
+          <span class="mod-icon mod-icon--blocked" title="Blocked">[B]</span>
+        {:else if moderationStore.isHidden(peer.peer_id) && !moderationStore.isBlocked(peer.peer_id)}
+          <span class="mod-icon" title="Hidden">[H]</span>
+        {:else if moderationStore.isMuted(peer.peer_id) && !moderationStore.isHidden(peer.peer_id)}
+          <span class="mod-icon" title="Muted">[M]</span>
+        {/if}
         <button class="edit-btn" onclick={() => editingPeerId = peer.peer_id} title="Set petname">
           [~]
         </button>
@@ -61,6 +96,28 @@
       {/if}
     {/each}
   </div>
+{/if}
+
+{#if contextMenu}
+  <PeerContextMenu
+    x={contextMenu.x}
+    y={contextMenu.y}
+    publicKey={contextMenu.publicKey}
+    currentTier={moderationStore.getEffectiveTier(contextMenu.publicKey)}
+    onMute={() => { handleSetTier(contextMenu!.publicKey, 'mute'); contextMenu = null; }}
+    onHide={() => { handleSetTier(contextMenu!.publicKey, 'hide'); contextMenu = null; }}
+    onBlock={() => { showBlockConfirm = contextMenu!.publicKey; contextMenu = null; }}
+    onRemove={() => { handleRemoveTier(contextMenu!.publicKey); contextMenu = null; }}
+    onClose={() => contextMenu = null}
+  />
+{/if}
+
+{#if showBlockConfirm}
+  <BlockConfirmDialog
+    peerName={getPeerDisplayName(showBlockConfirm)}
+    onConfirm={() => handleBlockConfirm(showBlockConfirm!)}
+    onCancel={() => showBlockConfirm = null}
+  />
 {/if}
 
 <style>
@@ -149,5 +206,16 @@
   .editor-container :global(.petname-editor) {
     position: relative;
     width: 100%;
+  }
+
+  .mod-icon {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .mod-icon--blocked {
+    color: #ff4444;
   }
 </style>

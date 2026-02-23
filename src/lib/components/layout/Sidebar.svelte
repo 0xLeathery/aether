@@ -10,6 +10,7 @@
   import { networkStore } from '../../stores/network.svelte';
   import { swarmStore } from '../../stores/swarm.svelte';
   import { contactsStore } from '../../stores/contacts.svelte';
+  import { moderationStore } from '../../stores/moderation.svelte';
   import { onMount } from 'svelte';
 
   let { identity }: { identity: any } = $props();
@@ -22,6 +23,7 @@
 
   onMount(() => {
     contactsStore.initialize();
+    moderationStore.initialize();
   });
 
   function toggleProfile() {
@@ -34,7 +36,7 @@
     <h2>PEERS</h2>
   </div>
 
-  <PeerList peers={networkStore.peers} />
+  <PeerList peers={networkStore.peers} currentUserKey={identity.public_key_hex} />
 
   <div class="network-status">
     <div class="status-indicator" class:online={networkStore.status?.running}>

@@ -72,7 +72,7 @@
       <span class="loading-text">Loading messages...</span>
     </div>
   {:else}
-    <MessageList messages={chatStore.messages} {currentUserKey} />
+    <MessageList messages={chatStore.messages} {currentUserKey} {swarmId} />
   {/if}
 
   <MessageInput onSend={handleSend} disabled={chatStore.sending} peers={mentionPeers} />
