@@ -7,6 +7,7 @@
   import JoinDialog from '../swarm/JoinDialog.svelte';
   import SwarmSettings from '../swarm/SwarmSettings.svelte';
   import ContactsList from '../contacts/ContactsList.svelte';
+  import ModerationList from '../moderation/ModerationList.svelte';
   import { networkStore } from '../../stores/network.svelte';
   import { swarmStore } from '../../stores/swarm.svelte';
   import { contactsStore } from '../../stores/contacts.svelte';
@@ -20,6 +21,7 @@
   let showJoin = $state(false);
   let showSwarmSettings = $state(false);
   let showContacts = $state(false);
+  let showModeration = $state(false);
 
   onMount(() => {
     contactsStore.initialize();
@@ -69,6 +71,13 @@
     [ VIEW CONTACTS ]
   </button>
 
+  <div class="header">
+    <h2>MODERATION</h2>
+  </div>
+  <button class="contacts-button" onclick={() => showModeration = true}>
+    [ MANAGE PEERS ]
+  </button>
+
   <div class="profile-section">
     <button class="profile-trigger" onclick={toggleProfile}>
       <Avatar publicKeyHex={identity.public_key_hex} size={32} />
@@ -90,6 +99,11 @@
   {#if showContacts}
     <div class="modal-backdrop" role="presentation" onclick={() => showContacts = false}></div>
     <ContactsList onClose={() => showContacts = false} />
+  {/if}
+
+  {#if showModeration}
+    <div class="modal-backdrop" role="presentation" onclick={() => showModeration = false}></div>
+    <ModerationList onClose={() => showModeration = false} />
   {/if}
 </div>
 
