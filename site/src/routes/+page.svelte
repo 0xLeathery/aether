@@ -172,3 +172,112 @@
     </div>
   </div>
 </section>
+
+<!-- Section 4: Trade-offs We Chose -->
+<section class="border-t border-border bg-bg-secondary py-20">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div class="text-center">
+      <h2 class="font-mono text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+        Trade-offs We Chose
+      </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-text-secondary">
+        Radical honesty about our architectural decisions. These are constraints
+        we chose deliberately.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-6 sm:grid-cols-2">
+      <div class="rounded-lg border border-border bg-bg-tertiary p-6">
+        <h3 class="font-mono text-base font-semibold text-text-primary">Simultaneous Presence Required</h3>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">In practice:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          Both peers must be online at the same time to exchange messages. There
+          is no inbox, no store-and-forward, no offline delivery.
+        </p>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">Why we chose it:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          Pure peer-to-peer sync eliminates relay servers entirely. No egress
+          costs, no central point of failure, no company holding your messages
+          in transit.
+        </p>
+      </div>
+
+      <div class="rounded-lg border border-border bg-bg-tertiary p-6">
+        <h3 class="font-mono text-base font-semibold text-text-primary">Transport-Only Encryption</h3>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">In practice:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          Messages are encrypted in transit between peers. Data at rest on your
+          disk is not encrypted by Aether — your OS and disk encryption handle
+          that.
+        </p>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">Why we chose it:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          Simplifies the v1 architecture and preserves local search and indexing
+          performance. Full at-rest encryption is a planned future improvement.
+        </p>
+      </div>
+
+      <div class="rounded-lg border border-border bg-bg-tertiary p-6">
+        <h3 class="font-mono text-base font-semibold text-text-primary">Hardware-Bound Identity</h3>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">In practice:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          Your identity keypair lives in your system keychain and cannot be
+          exported or transferred. Losing your device means starting fresh with
+          a new identity.
+        </p>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">Why we chose it:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          System keychain security (Secure Enclave on macOS, TPM on Windows)
+          makes private keys non-extractable. This is a stronger security
+          guarantee than seed phrases.
+        </p>
+      </div>
+
+      <div class="rounded-lg border border-border bg-bg-tertiary p-6">
+        <h3 class="font-mono text-base font-semibold text-text-primary">8-Peer Voice Limit</h3>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">In practice:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          Voice sessions support a maximum of 8 simultaneous participants.
+          Beyond 8, connection quality degrades due to mesh topology bandwidth
+          requirements.
+        </p>
+        <p class="mt-3 font-mono text-xs uppercase tracking-wider text-text-muted">Why we chose it:</p>
+        <p class="mt-1 text-sm leading-relaxed text-text-secondary">
+          WebRTC P2P mesh requires each peer to maintain N-1 direct connections.
+          8 is the practical limit before latency and bandwidth costs outpace
+          the benefit of avoiding a server.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section 5: Trust Signals -->
+<section class="border-t border-border py-20">
+  <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="font-mono text-sm font-semibold uppercase tracking-widest text-accent-green">Open Source</p>
+      <h2 class="mt-3 font-mono text-3xl font-bold text-text-primary">
+        Built in the open. Always will be.
+      </h2>
+      <p class="mt-4 text-lg leading-relaxed text-text-secondary">
+        Aether is {siteConfig.license}-licensed and developed entirely in
+        public. Read the source, audit the protocol, build on it, fork it.
+        Sovereignty includes the software itself.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <a
+          href={siteConfig.github}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center rounded-lg border border-border px-6 py-3 font-mono text-sm font-semibold text-text-primary transition-colors hover:border-border-bright hover:bg-bg-secondary"
+        >
+          View Source on GitHub
+        </a>
+        <span class="inline-flex items-center gap-2 rounded-full border border-border-bright px-4 py-2 font-mono text-sm text-text-secondary">
+          {siteConfig.license} License
+        </span>
+      </div>
+    </div>
+  </div>
+</section>
