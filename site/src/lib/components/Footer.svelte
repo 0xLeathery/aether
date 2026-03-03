@@ -76,7 +76,7 @@
     <div class="mt-8 flex flex-col items-center justify-between gap-2 border-t border-border pt-8 text-xs text-text-muted sm:flex-row">
       <span>v{siteConfig.version}</span>
       <span class="font-mono">Built for sovereignty</span>
-      <span>Free and open-source software</span>
+      <span>Source-available software</span>
     </div>
   </div>
 </footer>

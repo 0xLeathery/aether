@@ -10,5 +10,5 @@ export const siteConfig = {
   tagline: 'Sovereign P2P Communication',
   github: 'https://github.com/0xLeathery/aether',
   version: '0.1.0',
-  license: 'MIT',
+  license: 'Elastic License 2.0',
 };
