@@ -1,0 +1,25 @@
+{
+  "name": "aether-site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.1.1",
+    "tailwindcss": "^4.0.0",
+    "@tailwindcss/vite": "^4.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-vercel": "^6.0.0",
+    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "mdsvex": "^0.12.0",
+    "svelte": "^5.0.0",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0"
+  }
+}

@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@import "@fontsource-variable/jetbrains-mono";
+
+@theme {
+  /* Background colors */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #111111;
+  --color-bg-tertiary: #1a1a1a;
+  --color-bg-elevated: #1e1e1e;
+
+  /* Text colors */
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #a0a0a0;
+  --color-text-muted: #666666;
+
+  /* Accent colors - refined from app palette */
+  --color-accent-green: #00ff41;
+  --color-accent-green-dim: #00cc33;
+  --color-accent-green-bg: rgba(0, 255, 65, 0.1);
+  --color-accent-amber: #ffb000;
+  --color-accent-amber-dim: #cc8d00;
+  --color-accent-amber-bg: rgba(255, 176, 0, 0.1);
+
+  /* Border */
+  --color-border: #2a2a2a;
+  --color-border-bright: #3a3a3a;
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Global base styles */
+@layer base {
+  html {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--color-accent-green);
+    color: var(--color-bg-primary);
+  }
+}
