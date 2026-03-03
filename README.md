@@ -182,4 +182,4 @@ npm run check       # TypeScript type check
 
 ## License
 
-MIT
+[Elastic License 2.0](LICENSE) — free to use, modify, and self-host. You may not offer Aether as a hosted or managed service to third parties.
