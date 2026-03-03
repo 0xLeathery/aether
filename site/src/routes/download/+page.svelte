@@ -2,15 +2,37 @@
   <title>Download - Aether</title>
 </svelte:head>
 
-<div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
-  <h1 class="font-mono text-3xl font-bold text-accent-green">Download</h1>
-  <p class="mt-4 text-lg text-text-secondary">
-    Get Aether for macOS, Windows, and Linux. A single binary that runs your own
-    sovereign communication node -- no accounts, no servers, no dependencies.
+<div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+  <h1 class="font-mono text-3xl font-bold text-accent-green sm:text-4xl">Download Aether</h1>
+  <p class="mt-4 max-w-2xl text-lg leading-relaxed text-text-secondary">
+    Aether runs on macOS, Windows, and Linux. Download the desktop app to own your communications.
   </p>
-  <div class="mt-8 rounded-lg border border-border bg-bg-secondary p-6">
-    <p class="font-mono text-sm text-text-muted">
-      // Download links are being prepared. Builds available soon via GitHub Releases.
-    </p>
+
+  <div class="mt-10 grid gap-6 sm:grid-cols-3">
+    <div class="rounded-lg border border-border bg-bg-secondary p-6 text-center">
+      <div class="text-4xl">&#63743;</div>
+      <h3 class="mt-3 font-mono text-lg font-semibold text-text-primary">macOS</h3>
+      <p class="mt-2 text-sm text-text-muted">Apple Silicon &amp; Intel</p>
+      <p class="mt-4 font-mono text-xs text-accent-amber">Coming soon</p>
+    </div>
+
+    <div class="rounded-lg border border-border bg-bg-secondary p-6 text-center">
+      <div class="text-4xl">&#x1F5A5;</div>
+      <h3 class="mt-3 font-mono text-lg font-semibold text-text-primary">Windows</h3>
+      <p class="mt-2 text-sm text-text-muted">Windows 10+</p>
+      <p class="mt-4 font-mono text-xs text-accent-amber">Coming soon</p>
+    </div>
+
+    <div class="rounded-lg border border-border bg-bg-secondary p-6 text-center">
+      <div class="text-4xl">&#x1F427;</div>
+      <h3 class="mt-3 font-mono text-lg font-semibold text-text-primary">Linux</h3>
+      <p class="mt-2 text-sm text-text-muted">AppImage &amp; .deb</p>
+      <p class="mt-4 font-mono text-xs text-accent-amber">Coming soon</p>
+    </div>
+  </div>
+
+  <div class="mt-10 space-y-3 text-sm text-text-muted">
+    <p>Requires a 64-bit operating system.</p>
+    <p>All builds are open source. Verify with SHA-256 checksums.</p>
   </div>
 </div>
