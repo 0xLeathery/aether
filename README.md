@@ -1,25 +1,83 @@
 # Aether
 
-**Sovereign peer-to-peer communication. No servers. No accounts. Just cryptographic identity and direct connections.**
+**Sovereign peer-to-peer messaging and voice chat. No servers. No accounts. No tokens. Just your keys.**
 
-Aether is a decentralized desktop app for messaging and voice chat. Your identity is an Ed25519 keypair stored in your OS keychain — not on someone else's server. Peers connect directly over libp2p with NAT traversal, and all data syncs via CRDTs with no central authority.
+Aether is an open-source desktop app for private group communication. Your identity is a cryptographic keypair stored in your OS keychain — nothing lives on anyone else's server. Peers find each other and connect directly. Messages sync without a middleman.
 
-No email. No phone number. No password. Your keys are your identity.
+> **No token. No blockchain. No crypto.** Aether is pure open-source software. There is no associated cryptocurrency, NFT, or token of any kind.
+
+---
+
+## Why Aether?
+
+Most "private" messaging apps still require a phone number, email address, or central server that can be subpoenaed, hacked, or shut down. Aether removes that dependency entirely:
+
+| | Aether | Signal | Discord | Matrix |
+|---|---|---|---|---|
+| No account required | ✓ | ✗ (phone) | ✗ (email) | ✗ (email) |
+| No central server | ✓ | ✗ | ✗ | ✗ (federated) |
+| No metadata leakage | ✓ | partial | ✗ | partial |
+| Local identity | ✓ | ✗ | ✗ | ✗ |
+| Voice chat | ✓ | ✓ | ✓ | ✓ |
+| Open source | ✓ | ✓ | ✗ | ✓ |
+
+---
 
 ## Features
 
-- **Cryptographic Identity** — Ed25519 keypairs generated locally and stored in the platform keychain (iCloud Keychain, Windows Credential Manager, libsecret)
-- **P2P Networking** — Direct connections via libp2p with mDNS (LAN) and Kademlia DHT (WAN) discovery, plus relay/dcutr NAT traversal
-- **Swarms** — Isolated groups secured by Pre-Shared Keys, shareable via `aether://` invite URIs
-- **CRDT Chat** — Persistent text messaging synced with Automerge, conflict-free across peers
-- **P2P Voice** — Real-time mesh voice chat with Opus codec, adaptive jitter buffer, up to 8 participants
-- **Channels** — Create, rename, and delete channels within swarms, with metadata synced via CRDT
-- **Mentions** — @mention autocomplete with highlight notifications, resilient to name changes
-- **Unread Tracking** — Per-channel and per-swarm unread indicators
-- **Contacts & Petnames** — Assign local nicknames to peers that override their self-asserted display names
-- **Moderation** — Tiered peer moderation (mute/hide/block) with global and per-swarm scopes
-- **Desktop Notifications** — Focus-gated, throttled, mention-aware, moderation-filtered
-- **Voice Controls** — Mute/unmute with zero-latency toggle (capture stream stays active)
+- **Cryptographic identity** — Ed25519 keypairs generated on your device, stored in your OS keychain (iCloud Keychain, Windows Credential Manager, libsecret). No registration, no email, no phone.
+- **Direct P2P networking** — libp2p with mDNS (LAN) and Kademlia DHT (internet) discovery, plus relay/DCUTR for NAT traversal. Peers connect directly.
+- **Swarms** — Isolated groups secured by a Pre-Shared Key. Share an `aether://` invite URI to let others join.
+- **Persistent chat** — Messages sync via Automerge CRDTs, conflict-free across peers. Works offline; syncs when peers reconnect.
+- **P2P voice** — Mesh voice chat using the Opus codec with an adaptive jitter buffer. Up to 8 participants, no media server.
+- **Channels** — Create, rename, and delete channels within a swarm. Metadata syncs via CRDT.
+- **Mentions** — @mention autocomplete with notifications, resilient to display name changes.
+- **Contacts & petnames** — Assign local nicknames to peers that override their self-asserted names.
+- **Moderation** — Tiered mute/hide/block with global and per-swarm scope.
+- **Desktop notifications** — Focus-gated, throttled, mention-aware, moderation-filtered.
+
+---
+
+## Quick Start
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) v18+
+- [Rust](https://www.rust-lang.org/tools/install) (stable toolchain)
+- Tauri v2 [platform dependencies](https://v2.tauri.app/start/prerequisites/)
+- **Linux only:** `libasound2-dev`
+
+### Run
+
+```bash
+git clone https://github.com/your-org/aether.git
+cd aether
+npm install
+npm run tauri dev
+```
+
+### Build
+
+```bash
+npm run tauri build
+```
+
+Installers are emitted to `src-tauri/target/release/bundle/`.
+
+---
+
+## How It Works
+
+**1. Generate your identity**
+On first launch, Aether generates an Ed25519 keypair. The private key goes into your OS keychain. Your public key is your permanent address — share it like a username.
+
+**2. Create or join a swarm**
+Creating a swarm generates a 32-byte Pre-Shared Key that isolates the group at the network layer. Share the `aether://` invite URI with anyone you want in the group.
+
+**3. Chat and call**
+Text messages are backed by Automerge CRDT documents that sync peer-to-peer over libp2p. Voice flows over a direct P2P mesh: microphone → Opus encode → libp2p stream → Opus decode → jitter buffer → speaker.
+
+---
 
 ## Architecture
 
@@ -45,32 +103,14 @@ No email. No phone number. No password. Your keys are your identity.
 | Layer | Technology |
 |-------|-----------|
 | Frontend | Svelte 5, TypeScript, Vite 6 |
-| Desktop Framework | Tauri v2 |
-| Networking | libp2p (Kademlia, mDNS, relay, dcutr, QUIC/TCP, noise, yamux) |
-| Data Sync | Automerge CRDTs |
-| Voice | cpal (capture/playback), Opus codec, P2P mesh |
+| Desktop | Tauri v2 |
+| Networking | libp2p (Kademlia, mDNS, relay, DCUTR, QUIC/TCP, Noise, Yamux) |
+| Data sync | Automerge CRDTs |
+| Voice | cpal, Opus codec, P2P mesh |
 | Identity | ed25519-dalek, OS keychain via keyring |
-| Async Runtime | Tokio |
+| Async runtime | Tokio |
 
-## Prerequisites
-
-- [Node.js](https://nodejs.org/) v18+
-- [Rust](https://www.rust-lang.org/tools/install) (stable toolchain)
-- Platform dependencies for [Tauri v2](https://v2.tauri.app/start/prerequisites/)
-- Linux only: `libasound2-dev` (for audio capture/playback)
-
-## Getting Started
-
-```bash
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run tauri dev
-
-# Build for production
-npm run tauri build
-```
+---
 
 ## Project Structure
 
@@ -78,62 +118,67 @@ npm run tauri build
 src/                          # Svelte 5 frontend
 ├── App.svelte                # Root component — app state machine
 ├── lib/
-│   ├── tauri.ts              # Typed IPC bridge (invoke + event listeners)
+│   ├── tauri.ts              # Typed IPC bridge
 │   ├── stores/               # Reactive state (Svelte 5 Runes)
 │   │   ├── identity          # Keypair, display name
-│   │   ├── network           # Connection status, peer list
+│   │   ├── network           # Connection status, peers
 │   │   ├── swarm             # Swarm membership, metadata
 │   │   ├── chat              # Messages, channels
 │   │   ├── voice             # Voice session state
-│   │   ├── contacts          # Petnames, contact list
+│   │   ├── contacts          # Petnames
 │   │   ├── unread            # Per-channel unread counts
 │   │   ├── moderation        # Block/mute/hide state
 │   │   └── notification      # Desktop notification logic
-│   └── components/
-│       ├── layout/           # App shell, sidebar, channel list
-│       ├── setup/            # First-launch identity creation
-│       ├── chat/             # Message list, input, mention picker
-│       ├── voice/            # Voice panel, controls
-│       ├── peers/            # Peer list
-│       ├── swarm/            # Swarm selector, invite/join dialogs
-│       ├── contacts/         # Contact list, editor
-│       ├── channel/          # Channel context menu, create/delete
-│       ├── moderation/       # Peer actions, moderation list
-│       └── profile/          # Avatar, profile popover
+│   └── components/           # UI components by feature
 
 src-tauri/                    # Rust backend
 ├── src/
-│   ├── lib.rs                # Tauri app builder, command registration
-│   ├── error.rs              # Structured error types
-│   ├── identity/             # Ed25519 keygen, keychain storage, ACL
+│   ├── identity/             # Ed25519 keygen, keychain, ACL
 │   ├── commands/             # Tauri IPC handlers
-│   ├── network/              # libp2p swarm lifecycle, behaviours
-│   ├── swarm/                # PSK management, metadata sync, storage
+│   ├── network/              # libp2p swarm lifecycle
+│   ├── swarm/                # PSK management, metadata sync
 │   ├── chat/                 # Automerge documents, sync protocol
-│   ├── voice/                # Opus codec, jitter buffer, mixer, capture/playback
+│   ├── voice/                # Opus codec, jitter buffer, mixer
 │   ├── contacts/             # Contact storage
-│   └── moderation/           # Moderation tiers, storage
+│   └── moderation/           # Moderation tiers
 ├── Cargo.toml
 └── tauri.conf.json
 ```
 
-## How It Works
+---
 
-**Identity** — On first launch, Aether generates an Ed25519 keypair. The private key goes into your OS keychain; the public key becomes your permanent address. You choose a display name, but peers can override it locally with petnames.
-
-**Swarms** — Creating a swarm generates a 32-byte Pre-Shared Key that isolates the group at the network layer. Share the `aether://` invite URI for others to join. All traffic within a swarm is encrypted with the PSK.
-
-**Chat** — Each channel is backed by an Automerge CRDT document synced peer-to-peer over libp2p streams. Messages merge conflict-free without coordination. Documents persist to disk for offline access.
-
-**Voice** — Audio flows over a direct P2P mesh. The pipeline runs: microphone capture → Opus encode → libp2p stream → network → Opus decode → adaptive jitter buffer → mixer → speaker playback. All at 48kHz with 20ms frames.
-
-## Platforms
+## Platform Support
 
 | Platform | Status |
 |----------|--------|
 | macOS (10.13+) | Supported |
 | Windows | Supported |
 | Linux | Supported |
+
+---
+
+## Trade-offs
+
+Aether is honest about what it gives up for sovereignty:
+
+- **Voice is limited to 8 participants** — mesh topology doesn't scale like a media server
+- **Peers must be online simultaneously** to exchange new messages (CRDT state syncs on reconnect for history)
+- **Identity is hardware-bound** — if you lose your keychain without a backup, your identity is gone
+- **No moderation at the network layer** — PSK-based swarms rely on you not sharing the invite with bad actors
+
+---
+
+## Contributing
+
+Issues and PRs are welcome. The project is built with Tauri v2 (Rust) and Svelte 5 (TypeScript) — familiarity with either is enough to get started.
+
+```bash
+npm run tauri dev   # hot-reload dev build
+cargo test          # Rust unit tests (from src-tauri/)
+npm run check       # TypeScript type check
+```
+
+---
 
 ## License
 
