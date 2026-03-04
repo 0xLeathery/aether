@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Marketing Site
-status: in-progress
-stopped_at: Completed 15-01-PLAN.md
-last_updated: "2026-03-04T03:37:38.767Z"
-last_activity: 2026-03-04 -- Phase 15 Plan 01 complete
+status: completed
+stopped_at: Completed 15-02-PLAN.md (Phase 15 complete, v2.0 milestone complete)
+last_updated: "2026-03-04T03:37:22Z"
+last_activity: 2026-03-04 -- Phase 15 Plan 02 complete
 progress:
   total_phases: 5
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 11
-  completed_plans: 10
-  percent: 98
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** "The Sovereign Node" -- Users own their identity and data completely. No central servers, no "cloud" to delete you, zero egress costs.
-**Current focus:** Phase 15 -- Milestone Verification & Closure (v2.0 Marketing Site)
+**Current focus:** Phase 15 -- Milestone Verification & Closure (v2.0 Marketing Site) -- COMPLETE
 
 ## Current Position
 
 Phase: 15 of 15 (Milestone Verification & Closure)
-Plan: 1 of 2 in current phase
-Status: Phase 15 Plan 01 complete, Plan 02 remaining
-Last activity: 2026-03-04 -- Phase 15 Plan 01 complete
+Plan: 2 of 2 in current phase (PHASE COMPLETE)
+Status: Phase 15 complete, v2.0 milestone complete
+Last activity: 2026-03-04 -- Phase 15 Plan 02 complete
 
-Progress: [██████████] 98% (v2.0 phases 11-15)
+Progress: [██████████] 100% (v2.0 phases 11-15)
 
 ## Performance Metrics
 
@@ -45,9 +45,9 @@ Progress: [██████████] 98% (v2.0 phases 11-15)
 - Total execution time: 60 min
 
 **v2.0 Velocity:**
-- Total plans completed: 8
-- Average duration: 5.6 min
-- Total execution time: ~45 min
+- Total plans completed: 9
+- Average duration: 5.7 min
+- Total execution time: ~51 min
 
 ## Accumulated Context
 
@@ -85,6 +85,8 @@ Progress: [██████████] 98% (v2.0 phases 11-15)
 - [Phase 15]: SITE-04 updated to platform-agnostic text (removed Cloudflare Pages reference) since Vercel was the actual deployment
 - [Phase 15]: LAND-05 marked complete; GitHub link consolidation into navLinks deferred to Plan 15-02
 - [Phase 15]: DOWN-01/02/03 confirmed already in Future Requirements section -- no redundant edits needed
+- [Phase 15]: Kept siteConfig.github for Footer "Report an Issue" derived URL while sourcing nav link from navLinks
+- [Phase 15]: Removed prerender.handleHttpError after all 16 doc pages verified -- restores default 404 detection
 
 ### Pending Todos
 
@@ -103,10 +105,10 @@ Progress: [██████████] 98% (v2.0 phases 11-15)
 
 ## Session Continuity
 
-Last session: 2026-03-04T03:37:38.765Z
-Stopped at: Completed 15-01-PLAN.md
+Last session: 2026-03-04T03:37:22Z
+Stopped at: Completed 15-02-PLAN.md (Phase 15 complete, v2.0 milestone complete)
 Resume file: None
 
 ---
 *Initialized: 2026-02-13*
-*Last updated: 2026-03-04 (Phase 15 Plan 01 complete)*
+*Last updated: 2026-03-04 (Phase 15 Plan 02 complete)*
