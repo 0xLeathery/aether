@@ -1,5 +1,8 @@
 <script lang="ts">
   import { navLinks, siteConfig } from '$lib/constants';
+
+  const internalLinks = navLinks.filter(l => !l.external);
+  const githubLink = navLinks.find(l => l.label === 'GitHub');
 </script>
 
 <footer class="mt-auto border-t border-border bg-bg-secondary">
@@ -24,7 +27,7 @@
           Navigate
         </h3>
         <ul class="mt-3 flex flex-col gap-2">
-          {#each navLinks as link}
+          {#each internalLinks as link}
             <li>
               <a
                 href={link.href}
@@ -50,7 +53,7 @@
           </li>
           <li>
             <a
-              href={siteConfig.github}
+              href={githubLink?.href}
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm text-text-secondary transition-colors duration-200 hover:text-text-primary"

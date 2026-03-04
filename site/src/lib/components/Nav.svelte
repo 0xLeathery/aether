@@ -3,6 +3,9 @@
   import NavLink from './NavLink.svelte';
   import MobileMenu from './MobileMenu.svelte';
 
+  const internalLinks = navLinks.filter(l => !l.external);
+  const githubLink = navLinks.find(l => l.label === 'GitHub');
+
   let visible = $state(true);
   let lastScrollY = $state(0);
   let mobileMenuOpen = $state(false);
@@ -38,7 +41,7 @@
 
     <!-- Desktop Navigation -->
     <div class="hidden items-center gap-6 md:flex">
-      {#each navLinks as link}
+      {#each internalLinks as link}
         <NavLink href={link.href}>
           {link.label}
         </NavLink>
@@ -54,7 +57,7 @@
         Try Demo
       </a>
       <a
-        href={siteConfig.github}
+        href={githubLink?.href}
         target="_blank"
         rel="noopener noreferrer"
         class="rounded-md border border-border-bright px-4 py-2 text-sm font-semibold text-text-secondary transition-colors duration-200 hover:border-text-secondary hover:text-text-primary"

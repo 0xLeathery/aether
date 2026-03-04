@@ -1,8 +1,15 @@
-export const navLinks = [
+interface NavLink {
+  href: string;
+  label: string;
+  external?: boolean;
+}
+
+export const navLinks: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/docs', label: 'Docs' },
   { href: '/download', label: 'Download' },
   { href: '/demo', label: 'Demo' },
+  { href: 'https://github.com/0xLeathery/aether', label: 'GitHub', external: true },
 ];
 
 export const siteConfig = {
