@@ -1,40 +1,57 @@
 # Aether
 
-**Sovereign peer-to-peer messaging and voice chat. No servers. No accounts. No tokens. Just your keys.**
+**Private group chat and voice calls, directly between devices. No servers. No accounts. No sign-up.**
 
-Aether is an open-source desktop app for private group communication. Your identity is a cryptographic keypair stored in your OS keychain — nothing lives on anyone else's server. Peers find each other and connect directly. Messages sync without a middleman.
+Aether is an open-source desktop app for people who want to communicate without trusting a third party. Your identity is a passkey stored on your device — nothing lives on anyone else's server. You connect directly to the people you're talking to.
 
 > **No token. No blockchain. No crypto.** Aether is pure open-source software. There is no associated cryptocurrency, NFT, or token of any kind.
 
 ---
 
-## Why Aether?
+## How It Works
 
-Most "private" messaging apps still require a phone number, email address, or central server that can be subpoenaed, hacked, or shut down. Aether removes that dependency entirely:
+**1. Get your passkey**
+On first launch, Aether creates a passkey on your device and stores it in your OS keychain (the same place your saved passwords live). This passkey *is* your identity — no sign-up, no email, no phone number.
+
+**2. Create or join a group**
+Start a group and share the invite link with the people you want in it. Only people with the link can join — like a private room with a one-time door code.
+
+**3. Chat and call**
+Messages go directly between devices — no server in the middle. If someone's offline, their messages catch up automatically when they reconnect. Voice works the same way: direct device-to-device, no middleman.
+
+---
+
+## What You Get
+
+- **Text chat** — Messages sync across everyone in the group automatically, even if someone was offline when you sent it.
+- **Voice calls** — Up to 8 people, no media server. Audio goes directly between devices.
+- **Channels** — Organise conversations into channels within a group, like you would in Slack or Discord.
+- **Mentions** — @mention people to get their attention. Works with notifications.
+- **Contacts & nicknames** — Assign your own nicknames to people that only you see.
+- **Moderation** — Mute, hide, or block people per-group or globally.
+- **Desktop notifications** — Smart notifications that respect focus, mutes, and mentions.
+
+### How does it compare?
 
 | | Aether | Signal | Discord | Matrix |
 |---|---|---|---|---|
 | No account required | ✓ | ✗ (phone) | ✗ (email) | ✗ (email) |
 | No central server | ✓ | ✗ | ✗ | ✗ (federated) |
 | No metadata leakage | ✓ | partial | ✗ | partial |
-| Local identity | ✓ | ✗ | ✗ | ✗ |
+| Local-only identity | ✓ | ✗ | ✗ | ✗ |
 | Voice chat | ✓ | ✓ | ✓ | ✓ |
 | Open source | ✓ | ✓ | ✗ | ✓ |
 
 ---
 
-## Features
+## Trade-offs
 
-- **Cryptographic identity** — Ed25519 keypairs generated on your device, stored in your OS keychain (iCloud Keychain, Windows Credential Manager, libsecret). No registration, no email, no phone.
-- **Direct P2P networking** — libp2p with mDNS (LAN) and Kademlia DHT (internet) discovery, plus relay/DCUTR for NAT traversal. Peers connect directly.
-- **Swarms** — Isolated groups secured by a Pre-Shared Key. Share an `aether://` invite URI to let others join.
-- **Persistent chat** — Messages sync via Automerge CRDTs, conflict-free across peers. Works offline; syncs when peers reconnect.
-- **P2P voice** — Mesh voice chat using the Opus codec with an adaptive jitter buffer. Up to 8 participants, no media server.
-- **Channels** — Create, rename, and delete channels within a swarm. Metadata syncs via CRDT.
-- **Mentions** — @mention autocomplete with notifications, resilient to display name changes.
-- **Contacts & petnames** — Assign local nicknames to peers that override their self-asserted names.
-- **Moderation** — Tiered mute/hide/block with global and per-swarm scope.
-- **Desktop notifications** — Focus-gated, throttled, mention-aware, moderation-filtered.
+Aether is honest about what it gives up:
+
+- **Everyone needs to be online** — Messages catch up when you reconnect, but there's no server holding them for you while you're away.
+- **Voice caps at 8 people** — Direct connections between every participant don't scale the way a central server does.
+- **Your identity lives on your device** — If you lose your device without a backup, your identity is gone. There's no "forgot password" flow.
+- **You control who gets the invite** — There's no central moderation. If you share the invite link with the wrong person, they're in.
 
 ---
 
@@ -50,7 +67,7 @@ Most "private" messaging apps still require a phone number, email address, or ce
 ### Run
 
 ```bash
-git clone https://github.com/your-org/aether.git
+git clone https://github.com/0xLeathery/aether.git
 cd aether
 npm install
 npm run tauri dev
@@ -64,18 +81,13 @@ npm run tauri build
 
 Installers are emitted to `src-tauri/target/release/bundle/`.
 
----
+### Platform Support
 
-## How It Works
-
-**1. Get your passkey**
-On first launch, Aether creates a passkey on your device and stores it in your OS keychain (the same place your saved passwords live). This passkey *is* your identity — no sign-up, no email, no phone number.
-
-**2. Create or join a group**
-Start a group and share the invite link with the people you want in it. Only people with the link can join — like a private room with a one-time door code.
-
-**3. Chat and call**
-Messages go directly between devices — no server in the middle. If someone's offline, their messages catch up automatically when they reconnect. Voice works the same way: direct device-to-device, no middleman.
+| Platform | Status |
+|----------|--------|
+| macOS (10.13+) | Supported |
+| Windows | Supported |
+| Linux | Supported |
 
 ---
 
@@ -110,9 +122,8 @@ Messages go directly between devices — no server in the middle. If someone's o
 | Identity | ed25519-dalek, OS keychain via keyring |
 | Async runtime | Tokio |
 
----
-
-## Project Structure
+<details>
+<summary>Project Structure</summary>
 
 ```
 src/                          # Svelte 5 frontend
@@ -145,26 +156,7 @@ src-tauri/                    # Rust backend
 └── tauri.conf.json
 ```
 
----
-
-## Platform Support
-
-| Platform | Status |
-|----------|--------|
-| macOS (10.13+) | Supported |
-| Windows | Supported |
-| Linux | Supported |
-
----
-
-## Trade-offs
-
-Aether is honest about what it gives up for sovereignty:
-
-- **Voice is limited to 8 participants** — mesh topology doesn't scale like a media server
-- **Peers must be online simultaneously** to exchange new messages (CRDT state syncs on reconnect for history)
-- **Identity is hardware-bound** — if you lose your keychain without a backup, your identity is gone
-- **No moderation at the network layer** — PSK-based swarms rely on you not sharing the invite with bad actors
+</details>
 
 ---
 
