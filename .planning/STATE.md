@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Marketing Site
-status: completed
-stopped_at: Completed 14-04-PLAN.md (Phase 14 complete)
-last_updated: "2026-03-04T02:13:09.881Z"
-last_activity: 2026-03-04 -- Phase 14 Plan 04 complete
+status: in-progress
+stopped_at: Completed 15-01-PLAN.md
+last_updated: "2026-03-04T03:37:38.767Z"
+last_activity: 2026-03-04 -- Phase 15 Plan 01 complete
 progress:
-  total_phases: 4
+  total_phases: 5
   completed_phases: 4
-  total_plans: 9
-  completed_plans: 9
-  percent: 100
+  total_plans: 11
+  completed_plans: 10
+  percent: 98
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** "The Sovereign Node" -- Users own their identity and data completely. No central servers, no "cloud" to delete you, zero egress costs.
-**Current focus:** Phase 14 -- Documentation (v2.0 Marketing Site)
+**Current focus:** Phase 15 -- Milestone Verification & Closure (v2.0 Marketing Site)
 
 ## Current Position
 
-Phase: 14 of 14 (Documentation)
-Plan: 4 of 4 in current phase (PHASE COMPLETE)
-Status: Phase 14 complete, all plans executed
-Last activity: 2026-03-04 -- Phase 14 Plan 04 complete
+Phase: 15 of 15 (Milestone Verification & Closure)
+Plan: 1 of 2 in current phase
+Status: Phase 15 Plan 01 complete, Plan 02 remaining
+Last activity: 2026-03-04 -- Phase 15 Plan 01 complete
 
-Progress: [██████████] 100% (v2.0 phases 11-15)
+Progress: [██████████] 98% (v2.0 phases 11-15)
 
 ## Performance Metrics
 
@@ -45,9 +45,9 @@ Progress: [██████████] 100% (v2.0 phases 11-15)
 - Total execution time: 60 min
 
 **v2.0 Velocity:**
-- Total plans completed: 7
-- Average duration: 5.9 min
-- Total execution time: ~41 min
+- Total plans completed: 8
+- Average duration: 5.6 min
+- Total execution time: ~45 min
 
 ## Accumulated Context
 
@@ -82,6 +82,9 @@ Progress: [██████████] 100% (v2.0 phases 11-15)
 - [Phase 14]: Encryption page leads with what IS encrypted before documenting limitations (honest positive framing)
 - [Phase 14]: FlexSearch Index with forward tokenize for prefix matching (simple, fast for ~15 docs)
 - [Phase 14]: Prerendered search.json with 500-char content per entry (7.5KB total, zero runtime cost)
+- [Phase 15]: SITE-04 updated to platform-agnostic text (removed Cloudflare Pages reference) since Vercel was the actual deployment
+- [Phase 15]: LAND-05 marked complete; GitHub link consolidation into navLinks deferred to Plan 15-02
+- [Phase 15]: DOWN-01/02/03 confirmed already in Future Requirements section -- no redundant edits needed
 
 ### Pending Todos
 
@@ -100,10 +103,10 @@ Progress: [██████████] 100% (v2.0 phases 11-15)
 
 ## Session Continuity
 
-Last session: 2026-03-04T01:52:00Z
-Stopped at: Completed 14-04-PLAN.md (Phase 14 complete)
+Last session: 2026-03-04T03:37:38.765Z
+Stopped at: Completed 15-01-PLAN.md
 Resume file: None
 
 ---
 *Initialized: 2026-02-13*
-*Last updated: 2026-03-04 (Phase 14 Plan 03 complete)*
+*Last updated: 2026-03-04 (Phase 15 Plan 01 complete)*
