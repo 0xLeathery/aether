@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Walking Skeleton** — Phases 1-5 (shipped 2015-02-16)
 - ✅ **v1.1 Community** — Phases 6-10 (shipped 2015-02-24)
-- 🚧 **v2.0 Marketing Site** — Phases 11-15 (in progress, gap closure)
+- ✅ **v2.0 Marketing Site** — Phases 11-15 (shipped 2026-03-04)
 
 ## Phases
 
@@ -37,7 +37,7 @@ Full details: `.planning/milestones/`
 
 </details>
 
-### 🚧 v2.0 Marketing Site (In Progress)
+### ✅ v2.0 Marketing Site (SHIPPED 2026-03-04)
 
 **Milestone Goal:** Build a public-facing marketing website that explains Aether's sovereign P2P philosophy, provides user and technical documentation, offers an interactive browser-based P2P demo, and drives desktop app downloads.
 
@@ -45,7 +45,7 @@ Full details: `.planning/milestones/`
 - [x] **Phase 12: Landing Page** - Vision-first hero, how-it-works, feature cards, trade-offs, open-source trust signals
 - [x] **Phase 13: Interactive Demo** - Browser-based WebRTC P2P text chat sandbox with share-link signaling
 - [x] **Phase 14: Documentation** - User guides and technical architecture docs with sidebar navigation and search (completed 2015-03-04)
-- [ ] **Phase 15: Milestone Verification & Closure** - Retroactive Phase 11 verification, deployment confirmation, requirements cleanup
+- [x] **Phase 15: Milestone Verification & Closure** - Retroactive Phase 11 verification, deployment confirmation, requirements cleanup (completed 2026-03-04)
 
 ## Phase Details
 
@@ -128,4 +128,4 @@ Plans:
 
 Plans:
 - [x] 15-01-PLAN.md — Phase 11 retroactive VERIFICATION.md and SITE-*/LAND-05 requirement closure
-- [ ] 15-02-PLAN.md — GitHub in navLinks for single-source-of-truth, prerender.handleHttpError cleanup
+- [x] 15-02-PLAN.md — GitHub in navLinks for single-source-of-truth, prerender.handleHttpError cleanup
