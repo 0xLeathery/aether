@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Marketing Site
-status: in-progress
-stopped_at: Completed 14-01-PLAN.md
-last_updated: "2026-03-04T01:34:43Z"
-last_activity: 2026-03-04 -- Phase 14 Plan 01 complete
+status: executing
+stopped_at: Completed 14-03-PLAN.md
+last_updated: "2026-03-04T01:47:36.970Z"
+last_activity: 2026-03-04 -- Phase 14 Plan 03 complete
 progress:
   total_phases: 5
   completed_phases: 3
   total_plans: 9
-  completed_plans: 6
-  percent: 67
+  completed_plans: 8
+  percent: 97
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 ## Current Position
 
 Phase: 14 of 15 (Documentation)
-Plan: 1 of 4 in current phase
-Status: Phase 14 in progress, Plan 01 complete
-Last activity: 2026-03-04 -- Phase 14 Plan 01 complete
+Plan: 3 of 4 in current phase
+Status: Phase 14 in progress, Plan 03 complete
+Last activity: 2026-03-04 -- Phase 14 Plan 03 complete
 
-Progress: [██████▒▒▒▒] 67% (v2.0 phases 11-15)
+Progress: [██████████] 97% (v2.0 phases 11-15)
 
 ## Performance Metrics
 
@@ -75,6 +75,11 @@ Progress: [██████▒▒▒▒] 67% (v2.0 phases 11-15)
 - [Phase 14]: Added prerender handleHttpError for /docs/* to allow incremental doc page creation across plans
 - [Phase 14]: Prose typography via .prose CSS class with Tailwind @apply -- consistent theme variable usage
 - [Phase 14]: Contributing card links to GitHub repo externally (contributing docs out of scope for v2.0)
+- [Phase 14]: List format for guide index links to avoid nested <a> tags from rehype-autolink-headings
+- [Phase 14]: Concise guide pages (150-300 words) with cross-links for natural feature discovery
+- [Phase 14]: All architecture SVGs inline in markdown (no separate Svelte components) for simplicity
+- [Phase 14]: Each protocol doc includes Related Pages section for cross-linking between architecture docs
+- [Phase 14]: Encryption page leads with what IS encrypted before documenting limitations (honest positive framing)
 
 ### Pending Todos
 
@@ -93,10 +98,10 @@ Progress: [██████▒▒▒▒] 67% (v2.0 phases 11-15)
 
 ## Session Continuity
 
-Last session: 2026-03-04T01:34:43Z
-Stopped at: Completed 14-01-PLAN.md
+Last session: 2026-03-04T01:47:36.968Z
+Stopped at: Completed 14-03-PLAN.md
 Resume file: None
 
 ---
 *Initialized: 2026-02-13*
-*Last updated: 2026-03-04 (Phase 14 Plan 01 complete)*
+*Last updated: 2026-03-04 (Phase 14 Plan 03 complete)*

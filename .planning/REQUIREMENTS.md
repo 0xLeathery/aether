@@ -82,17 +82,17 @@ Requirements for v2.0 Marketing Site. Each maps to roadmap phases.
 
 ### User Documentation
 
-- [ ] **UDOC-01**: Visitor can read a Getting Started guide covering install, first launch, and identity
-- [ ] **UDOC-02**: Visitor can read guides for swarms, inviting peers, channels, voice chat, and moderation
+- [x] **UDOC-01**: Visitor can read a Getting Started guide covering install, first launch, and identity
+- [x] **UDOC-02**: Visitor can read guides for swarms, inviting peers, channels, voice chat, and moderation
 - [x] **UDOC-03**: Visitor can navigate docs via sidebar with section hierarchy and prev/next links
 - [ ] **UDOC-04**: Visitor can search documentation via full-text search
 
 ### Technical Documentation
 
-- [ ] **TDOC-01**: Visitor can read an architecture overview with system diagram and component boundaries
-- [ ] **TDOC-02**: Visitor can read protocol documentation for networking, identity, CRDTs, voice, and encryption
-- [ ] **TDOC-03**: Visitor sees visual architecture diagrams (SVG) comparing centralized vs P2P models
-- [ ] **TDOC-04**: Technical docs include honest documentation of encryption scope and limitations
+- [x] **TDOC-01**: Visitor can read an architecture overview with system diagram and component boundaries
+- [x] **TDOC-02**: Visitor can read protocol documentation for networking, identity, CRDTs, voice, and encryption
+- [x] **TDOC-03**: Visitor sees visual architecture diagrams (SVG) comparing centralized vs P2P models
+- [x] **TDOC-04**: Technical docs include honest documentation of encryption scope and limitations
 
 ### Interactive Demo
 
@@ -188,14 +188,14 @@ Explicitly excluded. Documented to prevent scope creep.
 | DOWN-01 | Phase 15 | Pending |
 | DOWN-02 | Phase 15 | Pending |
 | DOWN-03 | Phase 15 | Pending |
-| UDOC-01 | Phase 14 | Pending |
-| UDOC-02 | Phase 14 | Pending |
+| UDOC-01 | Phase 14 | Complete |
+| UDOC-02 | Phase 14 | Complete |
 | UDOC-03 | Phase 14 | Complete |
 | UDOC-04 | Phase 14 | Pending |
-| TDOC-01 | Phase 14 | Pending |
-| TDOC-02 | Phase 14 | Pending |
-| TDOC-03 | Phase 14 | Pending |
-| TDOC-04 | Phase 14 | Pending |
+| TDOC-01 | Phase 14 | Complete |
+| TDOC-02 | Phase 14 | Complete |
+| TDOC-03 | Phase 14 | Complete |
+| TDOC-04 | Phase 14 | Complete |
 | DEMO-01 | Phase 13 | Complete |
 | DEMO-02 | Phase 13 | Complete |
 | DEMO-03 | Phase 13 | Complete |
