@@ -4,7 +4,7 @@
 
 - ✅ **v1.0 Walking Skeleton** — Phases 1-5 (shipped 2015-02-16)
 - ✅ **v1.1 Community** — Phases 6-10 (shipped 2015-02-24)
-- 🚧 **v2.0 Marketing Site** — Phases 11-15 (in progress)
+- 🚧 **v2.0 Marketing Site** — Phases 11-15 (in progress, gap closure)
 
 ## Phases
 
@@ -45,6 +45,7 @@ Full details: `.planning/milestones/`
 - [x] **Phase 12: Landing Page** - Vision-first hero, how-it-works, feature cards, trade-offs, open-source trust signals
 - [x] **Phase 13: Interactive Demo** - Browser-based WebRTC P2P text chat sandbox with share-link signaling
 - [x] **Phase 14: Documentation** - User guides and technical architecture docs with sidebar navigation and search (completed 2015-03-04)
+- [ ] **Phase 15: Milestone Verification & Closure** - Retroactive Phase 11 verification, deployment confirmation, requirements cleanup
 
 ## Phase Details
 
@@ -111,3 +112,16 @@ Plans:
 - [ ] 14-02-PLAN.md — User documentation: Getting Started guide + 5 user guides (swarms, peers, channels, voice, moderation)
 - [ ] 14-03-PLAN.md — Technical documentation: architecture overview with SVG diagrams + 5 protocol deep-dives
 - [ ] 14-04-PLAN.md — Full-text search: FlexSearch integration with search endpoint and sidebar search UI
+
+### Phase 15: Milestone Verification & Closure
+**Goal**: Close all audit gaps — verify Phase 11 deliverables, confirm deployment, clean up orphaned requirements, and resolve tech debt before milestone completion
+**Depends on**: Phase 14 (all feature phases complete)
+**Requirements**: SITE-01, SITE-02, SITE-03, SITE-04, LAND-05
+**Gap Closure:** Closes gaps from v2.0 milestone audit
+**Success Criteria** (what must be TRUE):
+  1. Phase 11 has a VERIFICATION.md confirming SITE-01 (responsive 375px+), SITE-02 (LCP <2.5s, <500KB), SITE-03 (zero cookies/analytics), and LAND-05 (navigation links)
+  2. SITE-04 deployment status is resolved — either confirmed deployed with checkbox updated, or documented as deferred
+  3. DOWN-01/02/03 moved from v2.0 scope to Future Requirements
+  4. LAND-05 GitHub link moved into navLinks array for single-source-of-truth
+  5. prerender.handleHttpError tightened in svelte.config.js (no longer suppresses all 404s)
+**Plans**: 0 plans (pending `/gsd:plan-phase 15`)
