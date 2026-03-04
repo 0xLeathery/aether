@@ -2,36 +2,36 @@
 
 ## Milestones
 
-- ✅ **v1.0 Walking Skeleton** — Phases 1-5 (shipped 2026-02-16)
-- ✅ **v1.1 Community** — Phases 6-10 (shipped 2026-02-24)
+- ✅ **v1.0 Walking Skeleton** — Phases 1-5 (shipped 2015-02-16)
+- ✅ **v1.1 Community** — Phases 6-10 (shipped 2015-02-24)
 - 🚧 **v2.0 Marketing Site** — Phases 11-15 (in progress)
 
 ## Phases
 
 <details>
-<summary>✅ v1.0 Walking Skeleton (Phases 1-5) — SHIPPED 2026-02-16</summary>
+<summary>✅ v1.0 Walking Skeleton (Phases 1-5) — SHIPPED 2015-02-16</summary>
 
-- [x] Phase 1: Foundation & Identity (2/2 plans) — completed 2026-02-13
-- [x] Phase 2: Sovereign Network (2/2 plans) — completed 2026-02-13
-- [x] Phase 3: Invitation System (2/2 plans) — completed 2026-02-16
-- [x] Phase 3.1: Fix Keychain Prompts (1/1 plan, INSERTED) — completed 2026-02-16
-- [x] Phase 4: Real-Time Voice (3/3 plans) — completed 2026-02-16
-- [x] Phase 5: Persistent Chat (3/3 plans) — completed 2026-02-16
+- [x] Phase 1: Foundation & Identity (2/2 plans) — completed 2015-02-13
+- [x] Phase 2: Sovereign Network (2/2 plans) — completed 2015-02-13
+- [x] Phase 3: Invitation System (2/2 plans) — completed 2015-02-16
+- [x] Phase 3.1: Fix Keychain Prompts (1/1 plan, INSERTED) — completed 2015-02-16
+- [x] Phase 4: Real-Time Voice (3/3 plans) — completed 2015-02-16
+- [x] Phase 5: Persistent Chat (3/3 plans) — completed 2015-02-16
 
 Full details: `.planning/milestones/v1.0-ROADMAP.md`
 
 </details>
 
 <details>
-<summary>✅ v1.1 Community (Phases 6-10) — SHIPPED 2026-02-24</summary>
+<summary>✅ v1.1 Community (Phases 6-10) — SHIPPED 2015-02-24</summary>
 
-- [x] **Phase 6: Foundation** - Voice mute, petnames/contacts, swarm management — completed 2026-02-16
-- [x] **Phase 7: Channel Management** - Create, rename, archive channels with CRDT sync — completed 2026-02-16
-- [x] **Phase 8: Unread & Mentions** - Unread indicators and @mention system — completed 2026-02-16
-- [x] **Phase 8.1: Fix CI CMake** - opus-codec, CI workflow, Linux release — completed 2026-02-19
-- [x] **Phase 9: Peer Moderation** - Hide and block peers locally — completed 2026-02-23
-- [x] **Phase 9.1: Fix isCreator Integration Bug** - Call setLocalIdentity so channel create/rename/delete UI renders — completed 2026-02-23
-- [x] **Phase 10: Desktop Notifications** - Native OS notifications for messages and mentions — completed 2026-02-23
+- [x] **Phase 6: Foundation** - Voice mute, petnames/contacts, swarm management — completed 2015-02-16
+- [x] **Phase 7: Channel Management** - Create, rename, archive channels with CRDT sync — completed 2015-02-16
+- [x] **Phase 8: Unread & Mentions** - Unread indicators and @mention system — completed 2015-02-16
+- [x] **Phase 8.1: Fix CI CMake** - opus-codec, CI workflow, Linux release — completed 2015-02-19
+- [x] **Phase 9: Peer Moderation** - Hide and block peers locally — completed 2015-02-23
+- [x] **Phase 9.1: Fix isCreator Integration Bug** - Call setLocalIdentity so channel create/rename/delete UI renders — completed 2015-02-23
+- [x] **Phase 10: Desktop Notifications** - Native OS notifications for messages and mentions — completed 2015-02-23
 
 Full details: `.planning/milestones/`
 
@@ -44,8 +44,7 @@ Full details: `.planning/milestones/`
 - [x] **Phase 11: Site Scaffold** - SvelteKit project in /site with Vercel deployment, global nav/footer, responsive foundation
 - [x] **Phase 12: Landing Page** - Vision-first hero, how-it-works, feature cards, trade-offs, open-source trust signals
 - [x] **Phase 13: Interactive Demo** - Browser-based WebRTC P2P text chat sandbox with share-link signaling
-- [x] **Phase 14: Documentation** - User guides and technical architecture docs with sidebar navigation and search (completed 2026-03-04)
-- [ ] **Phase 15: Downloads** - Platform-aware download page with OS detection, checksums, and system requirements
+- [x] **Phase 14: Documentation** - User guides and technical architecture docs with sidebar navigation and search (completed 2015-03-04)
 
 ## Phase Details
 
@@ -112,46 +111,3 @@ Plans:
 - [ ] 14-02-PLAN.md — User documentation: Getting Started guide + 5 user guides (swarms, peers, channels, voice, moderation)
 - [ ] 14-03-PLAN.md — Technical documentation: architecture overview with SVG diagrams + 5 protocol deep-dives
 - [ ] 14-04-PLAN.md — Full-text search: FlexSearch integration with search endpoint and sidebar search UI
-
-### Phase 15: Downloads
-**Goal**: Visitors can download the correct Aether binary for their platform with confidence in its authenticity
-**Depends on**: Phase 11 (scaffold deployed), Phase 14 (docs exist to inform download decision)
-**Requirements**: DOWN-01, DOWN-02, DOWN-03
-**Success Criteria** (what must be TRUE):
-  1. Visitor sees their detected operating system with a primary download button for their platform (macOS, Windows, or Linux)
-  2. Visitor can access all platform downloads with version number, file size, and system requirements listed
-  3. Visitor can verify any download via SHA-256 checksums displayed on the page
-**Plans**: 1 plan
-
-Plans:
-- [ ] 15-01: TBD
-
-## Progress
-
-**Execution Order:**
-Phases execute in numeric order: 11 > 12 > 13 > 14 > 15
-
-| Phase | Milestone | Plans Complete | Status | Completed |
-|-------|-----------|----------------|--------|-----------|
-| 1. Foundation & Identity | v1.0 | 2/2 | ✓ Complete | 2026-02-13 |
-| 2. Sovereign Network | v1.0 | 2/2 | ✓ Complete | 2026-02-13 |
-| 3. Invitation System | v1.0 | 2/2 | ✓ Complete | 2026-02-16 |
-| 3.1 Fix Keychain Prompts | v1.0 | 1/1 | ✓ Complete | 2026-02-16 |
-| 4. Real-Time Voice | v1.0 | 3/3 | ✓ Complete | 2026-02-16 |
-| 5. Persistent Chat | v1.0 | 3/3 | ✓ Complete | 2026-02-16 |
-| 6. Foundation | v1.1 | 3/3 | ✓ Complete | 2026-02-16 |
-| 7. Channel Management | v1.1 | 3/3 | ✓ Complete | 2026-02-16 |
-| 8. Unread & Mentions | v1.1 | 3/3 | ✓ Complete | 2026-02-16 |
-| 8.1 Fix CI CMake | v1.1 | 1/1 | ✓ Complete | 2026-02-19 |
-| 9. Peer Moderation | v1.1 | 4/4 | ✓ Complete | 2026-02-23 |
-| 9.1 Fix isCreator Bug | v1.1 | 1/1 | ✓ Complete | 2026-02-23 |
-| 10. Desktop Notifications | v1.1 | 1/1 | ✓ Complete | 2026-02-23 |
-| 11. Site Scaffold | v2.0 | 2/2 | ✓ Complete | 2026-03-04 |
-| 12. Landing Page | v2.0 | 1/1 | Complete | 2026-03-04 |
-| 13. Interactive Demo | v2.0 | Complete    | 2026-03-04 | 2026-03-04 |
-| 14. Documentation | 4/4 | Complete   | 2026-03-04 | - |
-| 15. Downloads | v2.0 | 0/? | Not started | - |
-
----
-*Created: 2026-02-13*
-*Last updated: 2026-03-04 (Phase 14 planned)*
