@@ -34,3 +34,14 @@ npm-debug.log*
 
 # OS
 Thumbs.db
+
+# Planning (internal)
+.planning/
+
+# Voice tree artifacts
+voicetree-13-2/
+
+# Claude Code / AI assistant
+CLAUDE.md
+.claude/settings.local.json
+.mcp.json
