@@ -1,6 +1,9 @@
 <script lang="ts">
-  import { navLinks, siteConfig } from '$lib/constants';
+  import { navLinks } from '$lib/constants';
   import NavLink from './NavLink.svelte';
+
+  const internalLinks = navLinks.filter(l => !l.external);
+  const githubLink = navLinks.find(l => l.label === 'GitHub');
 
   let { open, onclose }: { open: boolean; onclose: () => void } = $props();
 
@@ -44,7 +47,7 @@
 
     <!-- Navigation links -->
     <div class="flex flex-col gap-4">
-      {#each navLinks as link}
+      {#each internalLinks as link}
         <a
           href={link.href}
           onclick={onclose}
@@ -65,7 +68,7 @@
         Try Demo
       </a>
       <a
-        href={siteConfig.github}
+        href={githubLink?.href}
         target="_blank"
         rel="noopener noreferrer"
         class="block rounded-md border border-border-bright px-4 py-3 text-center text-base font-semibold text-text-secondary transition-colors hover:border-text-secondary hover:text-text-primary"
