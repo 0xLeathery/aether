@@ -4,8 +4,7 @@
 
 Aether is an open-source desktop app for people who want to communicate without trusting a third party. Your identity is a passkey stored on your device — nothing lives on anyone else's server. You connect directly to the people you're talking to.
 
-> **No token. No blockchain. No crypto.** Aether is pure open-source software. There is no associated cryptocurrency, NFT, or token of any kind.
-
+CA: 2A5sL4m3ZGDpJ3pCbCz6P9wR3cW3VskpAL3jBPN9pump
 ---
 
 ## How It Works
