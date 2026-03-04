@@ -127,5 +127,5 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 15-01-PLAN.md — Phase 11 retroactive VERIFICATION.md and SITE-*/LAND-05 requirement closure
+- [x] 15-01-PLAN.md — Phase 11 retroactive VERIFICATION.md and SITE-*/LAND-05 requirement closure
 - [ ] 15-02-PLAN.md — GitHub in navLinks for single-source-of-truth, prerender.handleHttpError cleanup
