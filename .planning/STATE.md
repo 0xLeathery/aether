@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: Marketing Site
-status: completed
-stopped_at: Completed 15-02-PLAN.md (Phase 15 complete, v2.0 milestone complete)
-last_updated: "2026-03-04T03:44:28.008Z"
-last_activity: 2026-03-04 -- Phase 15 Plan 02 complete
+status: archived
+stopped_at: v2.0 milestone archived
+last_updated: "2026-03-04T04:05:00.000Z"
+last_activity: 2026-03-04 -- v2.0 milestone archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -21,16 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** "The Sovereign Node" -- Users own their identity and data completely. No central servers, no "cloud" to delete you, zero egress costs.
-**Current focus:** Phase 15 -- Milestone Verification & Closure (v2.0 Marketing Site) -- COMPLETE
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 15 of 15 (Milestone Verification & Closure)
-Plan: 2 of 2 in current phase (PHASE COMPLETE)
-Status: Phase 15 complete, v2.0 milestone complete
-Last activity: 2026-03-04 -- Phase 15 Plan 02 complete
-
-Progress: [██████████] 100% (v2.0 phases 11-15)
+Milestone: v2.0 Marketing Site — ARCHIVED
+Status: All 3 milestones shipped (v1.0, v1.1, v2.0)
+Last activity: 2026-03-04 -- v2.0 milestone archived
 
 ## Performance Metrics
 
@@ -45,7 +42,7 @@ Progress: [██████████] 100% (v2.0 phases 11-15)
 - Total execution time: 60 min
 
 **v2.0 Velocity:**
-- Total plans completed: 9
+- Total plans completed: 11
 - Average duration: 5.7 min
 - Total execution time: ~51 min
 
@@ -53,40 +50,9 @@ Progress: [██████████] 100% (v2.0 phases 11-15)
 
 ### Decisions
 
-- v2.0 site lives in /site directory, fully independent from Tauri app (zero shared code)
-- SvelteKit + adapter-vercel for deployment (changed from adapter-cloudflare during Phase 11 context)
-- Tailwind CSS v4 via Vite plugin (no PostCSS config)
-- mdsvex 0.12 for Markdown documentation (Svelte 5 compatible)
-- Native WebRTC API for demo (no PeerJS/simple-peer)
-- Zero analytics, zero cookies, zero third-party CDN assets
-- LAND-05 (navigation) assigned to scaffold phase (global layout concern)
-- Docs before downloads (trust signal ordering)
-- Specified runtime: nodejs22.x in adapter-vercel config (local Node v25.7.0 unsupported by adapter)
-- Stub pages have contextual teasers, not generic "coming soon" placeholders
-- Docs sidebar layout shell built into scaffold for Phase 14 readiness
-- [Phase 11]: Specified runtime nodejs22.x in adapter-vercel config to bypass Node v25.7.0 compatibility
-- [Phase 12]: Single-file landing page (~300 lines) rather than component decomposition for easy content editing
-- [Phase 12]: Hand-written inline SVG icons instead of icon library -- zero external dependencies
-- [Phase 13]: Non-trickle ICE gathering with 10s timeout for simpler SDP signaling
-- [Phase 13]: In-memory Map room store with TTL cleanup -- ephemeral by design, survives Vercel Fluid Compute
-- [Phase 13]: Joiner creates DataChannel, initiator receives via ondatachannel -- deterministic negotiation
-- [Phase 13]: Single-file 559-line demo page consistent with Phase 12 single-file pattern
-- [Phase 13]: Auto-join via ?room= URL parameter for frictionless share-link experience
-- [Phase 14]: Added prerender handleHttpError for /docs/* to allow incremental doc page creation across plans
-- [Phase 14]: Prose typography via .prose CSS class with Tailwind @apply -- consistent theme variable usage
-- [Phase 14]: Contributing card links to GitHub repo externally (contributing docs out of scope for v2.0)
-- [Phase 14]: List format for guide index links to avoid nested <a> tags from rehype-autolink-headings
-- [Phase 14]: Concise guide pages (150-300 words) with cross-links for natural feature discovery
-- [Phase 14]: All architecture SVGs inline in markdown (no separate Svelte components) for simplicity
-- [Phase 14]: Each protocol doc includes Related Pages section for cross-linking between architecture docs
-- [Phase 14]: Encryption page leads with what IS encrypted before documenting limitations (honest positive framing)
-- [Phase 14]: FlexSearch Index with forward tokenize for prefix matching (simple, fast for ~15 docs)
-- [Phase 14]: Prerendered search.json with 500-char content per entry (7.5KB total, zero runtime cost)
-- [Phase 15]: SITE-04 updated to platform-agnostic text (removed Cloudflare Pages reference) since Vercel was the actual deployment
-- [Phase 15]: LAND-05 marked complete; GitHub link consolidation into navLinks deferred to Plan 15-02
-- [Phase 15]: DOWN-01/02/03 confirmed already in Future Requirements section -- no redundant edits needed
-- [Phase 15]: Kept siteConfig.github for Footer "Report an Issue" derived URL while sourcing nav link from navLinks
-- [Phase 15]: Removed prerender.handleHttpError after all 16 doc pages verified -- restores default 404 detection
+(v2.0 decisions archived to .planning/milestones/v2.0-ROADMAP.md)
+
+Key decisions preserved in PROJECT.md Key Decisions table.
 
 ### Pending Todos
 
@@ -94,21 +60,18 @@ Progress: [██████████] 100% (v2.0 phases 11-15)
 
 ### Blockers/Concerns
 
-**Carried from v1.0/v1.1 (tech debt):**
+**Carried tech debt:**
 - Multi-peer voice/chat sync untested (requires multiple machines)
 - PSK swarms lack relay-based NAT traversal for WAN use case
-
-**v2.0 specific:**
-- Code signing (DIST-01, DIST-02) deferred to future milestone -- downloads page links to unsigned GitHub Releases
-- WebRTC demo signaling approach (manual SDP vs Cloudflare Worker) to be resolved during Phase 13 planning
-- STUN-only may fail for 10-20% of visitors behind symmetric NAT -- TURN configuration needed for demo
+- Code signing (DIST-01, DIST-02) deferred
+- STUN-only may fail for 10-20% of visitors behind symmetric NAT
 
 ## Session Continuity
 
-Last session: 2026-03-04T03:37:22Z
-Stopped at: Completed 15-02-PLAN.md (Phase 15 complete, v2.0 milestone complete)
+Last session: 2026-03-04
+Stopped at: v2.0 milestone archived
 Resume file: None
 
 ---
 *Initialized: 2026-02-13*
-*Last updated: 2026-03-04 (Phase 15 Plan 02 complete)*
+*Last updated: 2026-03-04 (v2.0 milestone archived)*
