@@ -85,7 +85,7 @@ Requirements for v2.0 Marketing Site. Each maps to roadmap phases.
 - [x] **UDOC-01**: Visitor can read a Getting Started guide covering install, first launch, and identity
 - [x] **UDOC-02**: Visitor can read guides for swarms, inviting peers, channels, voice chat, and moderation
 - [x] **UDOC-03**: Visitor can navigate docs via sidebar with section hierarchy and prev/next links
-- [ ] **UDOC-04**: Visitor can search documentation via full-text search
+- [x] **UDOC-04**: Visitor can search documentation via full-text search
 
 ### Technical Documentation
 
@@ -191,7 +191,7 @@ Explicitly excluded. Documented to prevent scope creep.
 | UDOC-01 | Phase 14 | Complete |
 | UDOC-02 | Phase 14 | Complete |
 | UDOC-03 | Phase 14 | Complete |
-| UDOC-04 | Phase 14 | Pending |
+| UDOC-04 | Phase 14 | Complete |
 | TDOC-01 | Phase 14 | Complete |
 | TDOC-02 | Phase 14 | Complete |
 | TDOC-03 | Phase 14 | Complete |

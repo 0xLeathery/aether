@@ -44,7 +44,7 @@ Full details: `.planning/milestones/`
 - [x] **Phase 11: Site Scaffold** - SvelteKit project in /site with Vercel deployment, global nav/footer, responsive foundation
 - [x] **Phase 12: Landing Page** - Vision-first hero, how-it-works, feature cards, trade-offs, open-source trust signals
 - [x] **Phase 13: Interactive Demo** - Browser-based WebRTC P2P text chat sandbox with share-link signaling
-- [ ] **Phase 14: Documentation** - User guides and technical architecture docs with sidebar navigation and search
+- [x] **Phase 14: Documentation** - User guides and technical architecture docs with sidebar navigation and search (completed 2026-03-04)
 - [ ] **Phase 15: Downloads** - Platform-aware download page with OS detection, checksums, and system requirements
 
 ## Phase Details
@@ -149,7 +149,7 @@ Phases execute in numeric order: 11 > 12 > 13 > 14 > 15
 | 11. Site Scaffold | v2.0 | 2/2 | ✓ Complete | 2026-03-04 |
 | 12. Landing Page | v2.0 | 1/1 | Complete | 2026-03-04 |
 | 13. Interactive Demo | v2.0 | Complete    | 2026-03-04 | 2026-03-04 |
-| 14. Documentation | 3/4 | In Progress|  | - |
+| 14. Documentation | 4/4 | Complete   | 2026-03-04 | - |
 | 15. Downloads | v2.0 | 0/? | Not started | - |
 
 ---
