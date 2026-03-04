@@ -108,10 +108,10 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 14-01-PLAN.md — Docs infrastructure: rehype plugins, nav tree, sidebar/prev-next components, prose styles
-- [ ] 14-02-PLAN.md — User documentation: Getting Started guide + 5 user guides (swarms, peers, channels, voice, moderation)
-- [ ] 14-03-PLAN.md — Technical documentation: architecture overview with SVG diagrams + 5 protocol deep-dives
-- [ ] 14-04-PLAN.md — Full-text search: FlexSearch integration with search endpoint and sidebar search UI
+- [x] 14-01-PLAN.md — Docs infrastructure: rehype plugins, nav tree, sidebar/prev-next components, prose styles
+- [x] 14-02-PLAN.md — User documentation: Getting Started guide + 5 user guides (swarms, peers, channels, voice, moderation)
+- [x] 14-03-PLAN.md — Technical documentation: architecture overview with SVG diagrams + 5 protocol deep-dives
+- [x] 14-04-PLAN.md — Full-text search: FlexSearch integration with search endpoint and sidebar search UI
 
 ### Phase 15: Milestone Verification & Closure
 **Goal**: Close all audit gaps — verify Phase 11 deliverables, confirm deployment, clean up orphaned requirements, and resolve tech debt before milestone completion
@@ -124,4 +124,8 @@ Plans:
   3. DOWN-01/02/03 moved from v2.0 scope to Future Requirements
   4. LAND-05 GitHub link moved into navLinks array for single-source-of-truth
   5. prerender.handleHttpError tightened in svelte.config.js (no longer suppresses all 404s)
-**Plans**: 0 plans (pending `/gsd:plan-phase 15`)
+**Plans**: 2 plans
+
+Plans:
+- [ ] 15-01-PLAN.md — Phase 11 retroactive VERIFICATION.md and SITE-*/LAND-05 requirement closure
+- [ ] 15-02-PLAN.md — GitHub in navLinks for single-source-of-truth, prerender.handleHttpError cleanup
