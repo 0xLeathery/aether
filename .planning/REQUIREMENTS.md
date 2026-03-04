@@ -60,9 +60,9 @@ Requirements for v2.0 Marketing Site. Each maps to roadmap phases.
 
 ### Site Foundation
 
-- [x] **SITE-01**: Visitor sees a responsive site that works on mobile (375px+) and desktop
-- [x] **SITE-02**: Landing page loads in under 2.5s LCP with total weight under 500KB
-- [x] **SITE-03**: Site uses zero cookies, zero analytics, zero third-party CDN assets
+- [ ] **SITE-01**: Visitor sees a responsive site that works on mobile (375px+) and desktop
+- [ ] **SITE-02**: Landing page loads in under 2.5s LCP with total weight under 500KB
+- [ ] **SITE-03**: Site uses zero cookies, zero analytics, zero third-party CDN assets
 - [ ] **SITE-04**: Site is deployed and accessible at a public URL via Cloudflare Pages
 
 ### Landing Page
@@ -71,14 +71,12 @@ Requirements for v2.0 Marketing Site. Each maps to roadmap phases.
 - [x] **LAND-02**: Visitor sees a "How It Works" section with visual steps (generate identity, share secret code, connect P2P)
 - [x] **LAND-03**: Visitor sees feature highlight cards for voice chat, text chat, channels, moderation, and contacts
 - [x] **LAND-04**: Visitor sees a "Trade-offs We Chose" section honestly documenting limitations
-- [x] **LAND-05**: Visitor sees clear navigation (Home, Docs, Download, Demo, GitHub) with footer links
+- [ ] **LAND-05**: Visitor sees clear navigation (Home, Docs, Download, Demo, GitHub) with footer links
 - [x] **LAND-06**: Visitor sees open-source trust signals (GitHub link, license badge, "View Source" CTA)
 
-### Downloads
+### ~~Downloads~~ (Moved to Future Requirements)
 
-- [ ] **DOWN-01**: Visitor sees their detected OS with a primary download button (macOS/Windows/Linux)
-- [ ] **DOWN-02**: Visitor can access all platform downloads with version, file size, and system requirements
-- [ ] **DOWN-03**: Visitor can verify downloads via SHA-256 checksums displayed on the page
+~~Phase 15 (Downloads) was intentionally removed from roadmap. Requirements moved to Future Requirements.~~
 
 ### User Documentation
 
@@ -110,6 +108,12 @@ Deferred to future milestones. Tracked but not in current roadmap.
 - **CONT-01**: Blog / news section with release announcements
 - **CONT-02**: Video walkthrough / recorded demo
 - **CONT-03**: Internationalization / translated content
+
+### Downloads (Deferred from v2.0)
+
+- **DOWN-01**: Visitor sees their detected OS with a primary download button (macOS/Windows/Linux)
+- **DOWN-02**: Visitor can access all platform downloads with version, file size, and system requirements
+- **DOWN-03**: Visitor can verify downloads via SHA-256 checksums displayed on the page
 
 ### Distribution
 
@@ -175,19 +179,19 @@ Explicitly excluded. Documented to prevent scope creep.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SITE-01 | Phase 11 | Complete |
-| SITE-02 | Phase 11 | Complete |
-| SITE-03 | Phase 11 | Complete |
-| SITE-04 | Phase 11 | Pending |
+| SITE-01 | Phase 15 | Pending |
+| SITE-02 | Phase 15 | Pending |
+| SITE-03 | Phase 15 | Pending |
+| SITE-04 | Phase 15 | Pending |
 | LAND-01 | Phase 12 | Complete |
 | LAND-02 | Phase 12 | Complete |
 | LAND-03 | Phase 12 | Complete |
 | LAND-04 | Phase 12 | Complete |
-| LAND-05 | Phase 11 | Complete |
+| LAND-05 | Phase 15 | Pending |
 | LAND-06 | Phase 12 | Complete |
-| DOWN-01 | Phase 15 | Pending |
-| DOWN-02 | Phase 15 | Pending |
-| DOWN-03 | Phase 15 | Pending |
+| DOWN-01 | Future | Deferred |
+| DOWN-02 | Future | Deferred |
+| DOWN-03 | Future | Deferred |
 | UDOC-01 | Phase 14 | Complete |
 | UDOC-02 | Phase 14 | Complete |
 | UDOC-03 | Phase 14 | Complete |
@@ -203,8 +207,10 @@ Explicitly excluded. Documented to prevent scope creep.
 
 **Coverage:**
 - v1.1 requirements: 23 total (23 complete)
-- v2.0 requirements: 25 total
-- Mapped to phases: 25
+- v2.0 requirements: 22 total (3 moved to Future)
+- Complete: 17
+- Pending (Phase 15 verification): 5 (SITE-01, SITE-02, SITE-03, SITE-04, LAND-05)
+- Deferred to Future: 3 (DOWN-01, DOWN-02, DOWN-03)
 - Unmapped: 0
 
 ---
