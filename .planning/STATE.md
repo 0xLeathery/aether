@@ -4,7 +4,7 @@ milestone: v2.0
 milestone_name: Marketing Site
 status: completed
 stopped_at: Completed 15-02-PLAN.md (Phase 15 complete, v2.0 milestone complete)
-last_updated: "2026-03-04T03:37:22Z"
+last_updated: "2026-03-04T03:44:28.008Z"
 last_activity: 2026-03-04 -- Phase 15 Plan 02 complete
 progress:
   total_phases: 5
