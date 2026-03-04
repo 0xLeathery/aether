@@ -45,3 +45,85 @@
     color: var(--color-bg-primary);
   }
 }
+
+/* Prose typography for markdown-rendered content */
+.prose h1 {
+  @apply font-mono text-3xl font-bold text-accent-green sm:text-4xl;
+}
+
+.prose h2 {
+  @apply mt-10 border-b border-border pb-2 font-mono text-2xl font-bold text-text-primary;
+}
+
+.prose h3 {
+  @apply mt-8 font-mono text-xl font-semibold text-text-primary;
+}
+
+.prose h4 {
+  @apply mt-6 font-mono text-lg font-semibold text-text-primary;
+}
+
+.prose p {
+  @apply mt-4 text-base leading-relaxed text-text-secondary;
+}
+
+.prose ul {
+  @apply mt-4 list-disc space-y-2 pl-6 text-text-secondary;
+}
+
+.prose ol {
+  @apply mt-4 list-decimal space-y-2 pl-6 text-text-secondary;
+}
+
+.prose li {
+  @apply text-base leading-relaxed;
+}
+
+.prose a {
+  @apply text-accent-green underline decoration-accent-green/30 hover:decoration-accent-green;
+}
+
+.prose code {
+  @apply rounded bg-bg-tertiary px-1.5 py-0.5 font-mono text-sm text-accent-amber;
+}
+
+.prose pre {
+  @apply mt-4 overflow-x-auto rounded-lg border border-border bg-bg-secondary p-4;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+}
+
+.prose blockquote {
+  @apply mt-4 border-l-2 border-accent-green pl-4 italic text-text-muted;
+}
+
+.prose table {
+  @apply mt-4 w-full border-collapse;
+}
+
+.prose th {
+  @apply border-b border-border px-3 py-2 text-left font-mono text-sm font-semibold text-text-primary;
+}
+
+.prose td {
+  @apply border-b border-border px-3 py-2 text-sm text-text-secondary;
+}
+
+.prose hr {
+  @apply my-8 border-border;
+}
+
+.prose strong {
+  @apply font-semibold text-text-primary;
+}
+
+/* Heading anchor links */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a {
+  @apply no-underline hover:text-accent-green;
+  color: inherit;
+}

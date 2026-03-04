@@ -1,6 +1,16 @@
 <script>
+  import { page } from '$app/state';
+  import DocNav from '$lib/components/DocNav.svelte';
+  import PrevNext from '$lib/components/PrevNext.svelte';
+
   let { children } = $props();
   let sidebarOpen = $state(false);
+
+  // Close sidebar on navigation (mobile)
+  $effect(() => {
+    page.url.pathname;
+    sidebarOpen = false;
+  });
 </script>
 
 <div class="flex min-h-[calc(100vh-4rem)]">
@@ -15,18 +25,16 @@
     </svg>
   </button>
 
-  <!-- Sidebar shell - Phase 14 fills this with documentation navigation -->
+  <!-- Sidebar -->
   <aside
     class="fixed inset-y-0 left-0 z-30 w-64 shrink-0 transform border-r border-border bg-bg-primary pt-16 transition-transform duration-200 md:static md:translate-x-0 md:pt-0"
     class:-translate-x-full={!sidebarOpen}
     class:translate-x-0={sidebarOpen}
   >
-    <nav class="sticky top-16 p-6">
-      <h2 class="font-mono text-sm font-semibold uppercase tracking-wider text-text-muted">Documentation</h2>
-      <p class="mt-4 text-sm leading-relaxed text-text-muted">
-        Navigation will appear here as docs are added in Phase 14.
-      </p>
-    </nav>
+    <div class="sticky top-16 p-6">
+      <h2 class="mb-4 font-mono text-sm font-semibold uppercase tracking-wider text-text-muted">Documentation</h2>
+      <DocNav />
+    </div>
   </aside>
 
   <!-- Mobile overlay backdrop -->
@@ -40,6 +48,9 @@
 
   <!-- Main content area -->
   <div class="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6 lg:px-8">
-    {@render children()}
+    <div class="prose">
+      {@render children()}
+    </div>
+    <PrevNext />
   </div>
 </div>
