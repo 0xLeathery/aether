@@ -22,18 +22,7 @@ const config = {
   kit: {
     adapter: adapter({
       runtime: 'nodejs22.x'
-    }),
-    prerender: {
-      handleHttpError: ({ path, message }) => {
-        // Doc pages are created incrementally across Phase 14 plans.
-        // Warn instead of fail for /docs/* routes that don't exist yet.
-        if (path.startsWith('/docs/')) {
-          console.warn(`[prerender] Skipping unbuilt doc page: ${path}`);
-          return;
-        }
-        throw new Error(message);
-      }
-    }
+    })
   }
 };
 
