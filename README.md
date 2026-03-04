@@ -68,14 +68,14 @@ Installers are emitted to `src-tauri/target/release/bundle/`.
 
 ## How It Works
 
-**1. Generate your identity**
-On first launch, Aether generates an Ed25519 keypair. The private key goes into your OS keychain. Your public key is your permanent address — share it like a username.
+**1. Get your passkey**
+On first launch, Aether creates a passkey on your device and stores it in your OS keychain (the same place your saved passwords live). This passkey *is* your identity — no sign-up, no email, no phone number.
 
-**2. Create or join a swarm**
-Creating a swarm generates a 32-byte Pre-Shared Key that isolates the group at the network layer. Share the `aether://` invite URI with anyone you want in the group.
+**2. Create or join a group**
+Start a group and share the invite link with the people you want in it. Only people with the link can join — like a private room with a one-time door code.
 
 **3. Chat and call**
-Text messages are backed by Automerge CRDT documents that sync peer-to-peer over libp2p. Voice flows over a direct P2P mesh: microphone → Opus encode → libp2p stream → Opus decode → jitter buffer → speaker.
+Messages go directly between devices — no server in the middle. If someone's offline, their messages catch up automatically when they reconnect. Voice works the same way: direct device-to-device, no middleman.
 
 ---
 
