@@ -1,6 +1,7 @@
 <script>
   import { page } from '$app/state';
   import DocNav from '$lib/components/DocNav.svelte';
+  import DocSearch from '$lib/components/DocSearch.svelte';
   import PrevNext from '$lib/components/PrevNext.svelte';
 
   let { children } = $props();
@@ -33,6 +34,7 @@
   >
     <div class="sticky top-16 p-6">
       <h2 class="mb-4 font-mono text-sm font-semibold uppercase tracking-wider text-text-muted">Documentation</h2>
+      <DocSearch />
       <DocNav />
     </div>
   </aside>
