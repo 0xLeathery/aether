@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/docs/guides/inviting-peers/+page.md";

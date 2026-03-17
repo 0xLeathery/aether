@@ -1,0 +1,19 @@
+import { a3 as head, e as escape_html, a as attr } from "../../../../../chunks/index.js";
+const metadata = {
+  "title": "Swarms",
+  "description": "Create private peer groups, share secret keys, and manage your Aether communities."
+};
+const { title, description } = metadata;
+function _page_md($$renderer) {
+  head("17w7zgi", $$renderer, ($$renderer2) => {
+    $$renderer2.title(($$renderer3) => {
+      $$renderer3.push(`<title>${escape_html(title)} - Aether Docs</title>`);
+    });
+    $$renderer2.push(`<meta name="description"${attr("content", description)}/>`);
+  });
+  $$renderer.push(`<h1 id="swarms"><a href="#swarms">Swarms</a></h1> <p>A <strong>swarm</strong> is a private peer group identified by a shared secret key (a <code>PSK</code> — Pre-Shared Key). Think of it like a private server, except there is no server. Just peers who share the same key.</p> <h2 id="creating-a-swarm"><a href="#creating-a-swarm">Creating a Swarm</a></h2> <p>When you create a swarm, Aether generates a cryptographically random 256-bit key encoded as an <code>aether://&lt;64-hex-chars></code> URI. This key <strong>is</strong> the swarm — whoever has it can join. There is no registration, no approval process.</p> <h2 id="joining-a-swarm"><a href="#joining-a-swarm">Joining a Swarm</a></h2> <p>Paste the <code>aether://</code> code that another member shared with you. Aether connects you to the swarm automatically via peer discovery over <code>DHT</code> (distributed hash table). This works on the same LAN without internet.</p> <h2 id="your-swarm-list"><a href="#your-swarm-list">Your Swarm List</a></h2> <p>All your swarms appear in the left sidebar. Click to switch between them. Each swarm has its own set of <a href="/docs/guides/channels">channels</a> and peers.</p> <h2 id="renaming-a-swarm"><a href="#renaming-a-swarm">Renaming a Swarm</a></h2> <p>Swarm names are <strong>local only</strong>. Your name for a swarm is yours alone — other peers name it whatever they want. There is no “official” name because there is no central authority.</p> <h2 id="leaving-a-swarm"><a href="#leaving-a-swarm">Leaving a Swarm</a></h2> <p>Leaving removes all local data for that swarm. You can rejoin later if you still have the secret code.</p> <h2 id="security"><a href="#security">Security</a></h2> <p>Anyone with the secret code can join your swarm. Treat the code like a password. If it gets shared with someone you do not trust, create a new swarm and re-invite only the peers you want.</p> <p>There is no way to “revoke” a code or kick someone out. This is a trade-off of the P2P model — the swarm key is the only credential, and there is no server to enforce access control. See <a href="/docs/guides/moderation">Moderation</a> for how to manage your experience locally.</p>`);
+}
+export {
+  _page_md as default,
+  metadata
+};

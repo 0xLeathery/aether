@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 80" fill="none">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&amp;display=swap');
+    .prompt { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-weight: 700; font-size: 48px; fill: #6EE7B7; }
+    .wordmark { font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; font-weight: 500; font-size: 48px; fill: #E2E8F0; }
+    .cursor { fill: #6EE7B7; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .cursor { animation: blink 1.1s step-end infinite; }
+  </style>
+  <!-- >_ prompt -->
+  <text x="16" y="56" class="prompt">&gt;_</text>
+  <!-- Aether wordmark -->
+  <text x="90" y="56" class="wordmark">Aether</text>
+  <!-- Blinking cursor -->
+  <rect x="330" y="22" width="3" height="38" rx="1" class="cursor"/>
+</svg>

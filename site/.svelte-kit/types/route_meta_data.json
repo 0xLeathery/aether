@@ -1,0 +1,62 @@
+{
+	"/": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/api/signal/[room]": [
+		"src/routes/api/signal/[room]/+server.ts"
+	],
+	"/demo": [
+		"src/routes/demo/+page.js",
+		"src/routes/+layout.js"
+	],
+	"/docs": [
+		"src/routes/+layout.js",
+		"src/routes/+layout.js"
+	],
+	"/docs/architecture": [
+		"src/routes/+layout.js"
+	],
+	"/docs/architecture/crdts": [
+		"src/routes/+layout.js"
+	],
+	"/docs/architecture/encryption": [
+		"src/routes/+layout.js"
+	],
+	"/docs/architecture/identity": [
+		"src/routes/+layout.js"
+	],
+	"/docs/architecture/networking": [
+		"src/routes/+layout.js"
+	],
+	"/docs/architecture/voice": [
+		"src/routes/+layout.js"
+	],
+	"/docs/getting-started": [
+		"src/routes/+layout.js"
+	],
+	"/docs/guides": [
+		"src/routes/+layout.js"
+	],
+	"/docs/guides/channels": [
+		"src/routes/+layout.js"
+	],
+	"/docs/guides/inviting-peers": [
+		"src/routes/+layout.js"
+	],
+	"/docs/guides/moderation": [
+		"src/routes/+layout.js"
+	],
+	"/docs/guides/swarms": [
+		"src/routes/+layout.js"
+	],
+	"/docs/guides/voice-chat": [
+		"src/routes/+layout.js"
+	],
+	"/docs/search.json": [
+		"src/routes/docs/search.json/+server.ts"
+	],
+	"/download": [
+		"src/routes/+layout.js"
+	]
+}
